@@ -19,7 +19,7 @@
     <input type="hidden" name="sectionType" value="{{ section_type }}">
 
     <div class="card border-0 shadow-sm rounded-3 mb-4">
-        <div class="card-header bg-white border-bottom"><h5 class="mb-0 fw-bold">CTA Content</h5></div>
+        <div class="card-header border-bottom"><h5 class="mb-0 fw-bold">CTA Content</h5></div>
         <div class="card-body">
             <div class="row g-3">
                 <div class="col-md-6"><label class="form-label fw-semibold">Title</label><input type="text" name="content[title]" class="form-control" value="{{ content.title|default('') }}"></div>
@@ -31,7 +31,7 @@
     </div>
 
     <div class="card border-0 shadow-sm rounded-3 mb-4">
-        <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center">
+        <div class="card-header border-bottom d-flex justify-content-between align-items-center">
             <h5 class="mb-0 fw-bold">CTA Buttons</h5>
             <button type="button" class="btn btn-sm btn-success" onclick="addCtaButton()"><i class="fa fa-plus"></i> Add Button</button>
         </div>
