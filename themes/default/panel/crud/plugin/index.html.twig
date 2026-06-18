@@ -36,6 +36,7 @@
                 <th>{{ 'indium.crud.plugin.version'|trans }}</th>
                 <th>{{ 'indium.crud.plugin.author'|trans }}</th>
                 <th>{{ 'indium.crud.plugin.state'|trans }}</th>
+                <th class="text-center">{{ 'indium.crud.plugin.toggle'|trans|default('Toggle') }}</th>
                 <th class="text-center">{{ 'indium.crud.plugin.actions'|trans }}</th>
             </tr>
             </thead>
@@ -51,29 +52,57 @@
                             {{ plugin.state.label|trans }}
                         </span>
                     </td>
+                    <td class="text-center">
+                        {% if plugin.state.canBeEnabled() %}
+                            <a href="{{ ea_url({ crudAction: 'enablePlugin', crudControllerFqcn: 'App\\Core\\Controller\\Panel\\Setting\\PluginCrudController', pluginName: plugin.name }) }}"
+                               class="btn btn-sm btn-success p-2 toggle-btn"
+                               title="{{ 'indium.crud.plugin.enable'|trans }}"
+                               data-plugin="{{ plugin.name }}"
+                               data-action="enable">
+                                <i class="fa fa-toggle-on"></i>
+                            </a>
+                        {% elseif plugin.state.canBeDisabled() %}
+                            <a href="{{ ea_url({ crudAction: 'disablePlugin', crudControllerFqcn: 'App\\Core\\Controller\\Panel\\Setting\\PluginCrudController', pluginName: plugin.name }) }}"
+                               class="btn btn-sm btn-warning p-2 toggle-btn"
+                               title="{{ 'indium.crud.plugin.disable'|trans }}"
+                               data-plugin="{{ plugin.name }}"
+                               data-action="disable">
+                                <i class="fa fa-toggle-off"></i>
+                            </a>
+                        {% elseif plugin.state.isFaulted() %}
+                            <a href="{{ ea_url({ crudAction: 'resetPlugin', crudControllerFqcn: 'App\\Core\\Controller\\Panel\\Setting\\PluginCrudController', pluginName: plugin.name }) }}"
+                               class="btn btn-sm btn-info p-2 toggle-btn"
+                               title="{{ 'indium.crud.plugin.reset'|trans }}"
+                               data-plugin="{{ plugin.name }}"
+                               data-action="reset">
+                                <i class="fa fa-redo"></i>
+                            </a>
+                        {% else %}
+                            <span class="text-muted">-</span>
+                        {% endif %}
+                    </td>
                     <td class="text-center actions">
-                        {# Detail button - always visible #}
                         <a href="{{ ea_url({ crudAction: 'viewDetails', crudControllerFqcn: 'App\\Core\\Controller\\Panel\\Setting\\PluginCrudController', pluginName: plugin.name }) }}"
                            class="btn btn-sm btn-primary p-2"
                            title="{{ 'indium.crud.plugin.details'|trans }}">
                             <i class="fa fa-eye"></i>
                         </a>
-
-                        {# Dynamic actions from controller #}
                         {% if plugin_actions[plugin.name] is defined %}
                             {% for action in plugin_actions[plugin.name] %}
-                                <a href="{{ action.url }}"
-                                   class="btn btn-sm p-2 {{ action.class }}"
-                                   title="{{ action.label }}">
-                                    <i class="{{ action.icon }}"></i>
-                                </a>
+                                {% if action.name not in ['enable', 'disable', 'reset'] %}
+                                    <a href="{{ action.url }}"
+                                       class="btn btn-sm p-2 {{ action.class }}"
+                                       title="{{ action.label }}">
+                                        <i class="{{ action.icon }}"></i>
+                                    </a>
+                                {% endif %}
                             {% endfor %}
                         {% endif %}
                     </td>
                 </tr>
             {% else %}
                 <tr>
-                    <td colspan="6" class="text-center">
+                    <td colspan="7" class="text-center">
                         <em>{{ 'indium.crud.plugin.no_plugins_found'|trans }}</em>
                     </td>
                 </tr>
@@ -86,4 +115,13 @@
 
 {% block body_javascript %}
     {{ parent() }}
+    <script>
+        document.querySelectorAll('.toggle-btn').forEach(function(btn) {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                var url = this.getAttribute('href');
+                window.location.href = url;
+            });
+        });
+    </script>
 {% endblock %}

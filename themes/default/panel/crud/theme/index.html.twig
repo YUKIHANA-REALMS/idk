@@ -43,6 +43,7 @@
                     <th>{{ 'indium.crud.theme.author'|trans }}</th>
                     <th>{{ 'indium.crud.theme.contexts'|trans }}</th>
                     <th>{{ 'indium.crud.theme.status'|trans }}</th>
+                    <th class="text-center">{{ 'indium.crud.theme.toggle'|trans|default('Toggle') }}</th>
                     <th class="text-center">{{ 'indium.crud.theme.actions'|trans }}</th>
                 </tr>
                 </thead>
@@ -76,6 +77,34 @@
                                 </span>
                             {% endif %}
                         </td>
+                        <td class="text-center">
+                            {% if theme.contexts is defined and theme.contexts|length > 0 %}
+                                {% for context in theme.contexts %}
+                                    {% set is_active = context in theme.activeContexts %}
+                                    {% if is_active %}
+                                        <form method="post" action="{{ path('admin_theme_clear_default') }}" style="display:inline" onsubmit="return confirm('Deactivate {{ theme.displayName }} from {{ context }}?');">
+                                            <input type="hidden" name="themeName" value="{{ theme.name }}">
+                                            <input type="hidden" name="context" value="{{ context }}">
+                                            <button type="submit" class="btn btn-sm btn-warning p-1 mb-1" title="Deactivate from {{ context }}">
+                                                <i class="fa fa-toggle-off"></i> {{ context|capitalize }}
+                                            </button>
+                                        </form>
+                                    {% else %}
+                                        <form method="post" action="{{ path('admin') }}" style="display:inline">
+                                            <input type="hidden" name="themeName" value="{{ theme.name }}">
+                                            <input type="hidden" name="context" value="{{ context }}">
+                                            <input type="hidden" name="crudAction" value="setDefaultTheme">
+                                            <input type="hidden" name="crudControllerFqcn" value="App\Core\Controller\Panel\Setting\ThemeCrudController">
+                                            <button type="submit" class="btn btn-sm btn-success p-1 mb-1" title="Activate in {{ context }}">
+                                                <i class="fa fa-toggle-on"></i> {{ context|capitalize }}
+                                            </button>
+                                        </form>
+                                    {% endif %}
+                                {% endfor %}
+                            {% else %}
+                                <span class="text-muted">-</span>
+                            {% endif %}
+                        </td>
                         <td class="text-center actions">
                             {# Dropdown menu with actions #}
                             {% if theme_actions[theme.name] is defined and theme_actions[theme.name]|length > 0 %}
@@ -104,7 +133,7 @@
                     </tr>
                 {% else %}
                     <tr>
-                        <td colspan="6" class="text-center">
+                        <td colspan="7" class="text-center">
                             <em>{{ 'indium.crud.theme.no_themes_found_unified'|trans }}</em>
                         </td>
                     </tr>

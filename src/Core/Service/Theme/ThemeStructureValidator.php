@@ -11,17 +11,88 @@ class ThemeStructureValidator
 {
     public function findThemeRoot(string $tempDir): ?string
     {
+        // 1. Try standard structure: themes/{name}/template.json
         $themesDir = $tempDir . '/themes';
-
-        if (!is_dir($themesDir)) {
-            return null;
+        if (is_dir($themesDir)) {
+            $dirs = glob($themesDir . '/*', GLOB_ONLYDIR);
+            foreach ($dirs as $dir) {
+                if (file_exists($dir . '/template.json')) {
+                    return $dir;
+                }
+            }
         }
 
-        $dirs = glob($themesDir . '/*', GLOB_ONLYDIR);
+        // 2. Try flat structure: template.json at root level
+        if (file_exists($tempDir . '/template.json')) {
+            // Create the expected themes/{name}/ structure
+            $manifest = json_decode(file_get_contents($tempDir . '/template.json'), true);
+            if (isset($manifest['template']['name'])) {
+                $themeName = $manifest['template']['name'];
+                $expectedDir = "$tempDir/themes/$themeName";
+                if (!is_dir($expectedDir)) {
+                    mkdir($expectedDir, 0755, true);
+                }
+                // Copy template.json to expected location
+                copy($tempDir . '/template.json', "$expectedDir/template.json");
+                // Move all other root files into the theme dir (skip __MACOSX)
+                $items = glob($tempDir . '/*');
+                foreach ($items as $item) {
+                    $basename = basename($item);
+                    if ($basename === 'themes' || $basename === '__MACOSX' || $basename === 'template.json') {
+                        continue;
+                    }
+                    $dest = "$expectedDir/$basename";
+                    if (!file_exists($dest)) {
+                        rename($item, $dest);
+                    }
+                }
+                return $expectedDir;
+            }
+        }
 
-        foreach ($dirs as $dir) {
+        // 3. Try nested single-directory: {somedir}/template.json or {somedir}/themes/{name}/template.json
+        $rootDirs = glob($tempDir . '/*', GLOB_ONLYDIR);
+        foreach ($rootDirs as $dir) {
+            $basename = basename($dir);
+            if ($basename === '__MACOSX') {
+                continue;
+            }
+
+            // Check if this dir has template.json directly
             if (file_exists($dir . '/template.json')) {
-                return $dir;
+                $manifest = json_decode(file_get_contents($dir . '/template.json'), true);
+                if (isset($manifest['template']['name'])) {
+                    $themeName = $manifest['template']['name'];
+                    $expectedDir = "$tempDir/themes/$themeName";
+                    if (!is_dir($expectedDir)) {
+                        mkdir($expectedDir, 0755, true);
+                    }
+                    copy($dir . '/template.json', "$expectedDir/template.json");
+                    // Move contents into the expected structure
+                    $items = glob($dir . '/*');
+                    foreach ($items as $item) {
+                        $itemBasename = basename($item);
+                        if ($itemBasename === 'template.json') {
+                            continue;
+                        }
+                        $dest = "$expectedDir/$itemBasename";
+                        if (!file_exists($dest)) {
+                            rename($item, $dest);
+                        }
+                    }
+                    return $expectedDir;
+                }
+            }
+
+            // Check for themes/{name}/template.json inside subdirectory
+            $innerThemesDir = $dir . '/themes';
+            if (is_dir($innerThemesDir)) {
+                $innerDirs = glob($innerThemesDir . '/*', GLOB_ONLYDIR);
+                foreach ($innerDirs as $innerDir) {
+                    if (file_exists($innerDir . '/template.json')) {
+                        return $innerDir;
+                    }
+                }
             }
         }
 

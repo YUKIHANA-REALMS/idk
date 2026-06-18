@@ -95,6 +95,7 @@ class ThemeCrudController extends AbstractPanelController
             Action::INDEX  => PermissionEnum::ACCESS_THEMES->value,
             'viewDetails' => PermissionEnum::VIEW_THEME->value,
             'setDefaultTheme' => PermissionEnum::SET_DEFAULT_THEME->value,
+            'clearDefaultTheme' => PermissionEnum::SET_DEFAULT_THEME->value,
             'uploadTheme' => PermissionEnum::UPLOAD_THEME->value,
             'processUpload' => PermissionEnum::UPLOAD_THEME->value,
             'copyTheme' => PermissionEnum::COPY_THEME->value,
@@ -335,6 +336,64 @@ class ThemeCrudController extends AbstractPanelController
                 [$themeName, $themeContext, $e->getMessage()]
             );
 
+            $this->addFlash('danger', sprintf(
+                $this->translator->trans('indium.crud.theme.set_as_default_error'),
+                $e->getMessage()
+            ));
+        }
+
+        return $this->redirect($this->adminUrlGenerator
+            ->setController(self::class)
+            ->setAction('index')
+            ->generateUrl());
+    }
+
+    #[Route('/admin/theme/clear-default', name: 'admin_theme_clear_default', methods: ['POST'])]
+    public function clearDefaultTheme(AdminContext $context): RedirectResponse
+    {
+        if (!$this->getUser()?->hasPermission(PermissionEnum::SET_DEFAULT_THEME)) {
+            throw $this->createAccessDeniedException('You do not have permission to modify themes.');
+        }
+
+        $request = $context->getRequest();
+        $themeName = $request->request->get('themeName');
+        $themeContext = $request->request->get('context', 'panel');
+
+        if (!in_array($themeContext, ['panel', 'landing', 'email'], true)) {
+            $themeContext = 'panel';
+        }
+
+        try {
+            $settingName = match($themeContext) {
+                'panel' => SettingEnum::PANEL_THEME->value,
+                'landing' => SettingEnum::LANDING_THEME->value,
+                'email' => SettingEnum::EMAIL_THEME->value,
+            };
+
+            // Only clear if this theme is currently set as default for this context
+            $currentTheme = $this->settingService->getSetting($settingName);
+            if ($currentTheme === $themeName) {
+                $this->settingService->saveSetting($settingName, null);
+
+                $this->logService->logAction(
+                    $this->getUser(),
+                    LogActionEnum::ENTITY_EDIT,
+                    [
+                        'setting' => $settingName,
+                        'value' => null,
+                        'context' => $themeContext,
+                    ]
+                );
+
+                $this->addFlash('success', sprintf(
+                    $this->translator->trans('indium.crud.theme.cleared_default'),
+                    $themeName,
+                    $themeContext
+                ));
+            } else {
+                $this->addFlash('info', $this->translator->trans('indium.crud.theme.not_active_in_context'));
+            }
+        } catch (\Exception $e) {
             $this->addFlash('danger', sprintf(
                 $this->translator->trans('indium.crud.theme.set_as_default_error'),
                 $e->getMessage()
