@@ -1,0 +1,58 @@
+﻿{% extends 'email/layout/base.html.twig' %}
+{% trans_default_domain 'messages' %}
+
+{% set emailTitle = 'indium.email.renew.subject'|trans %}
+
+{% block content %}
+    {% include 'email/components/icon_section.html.twig' with {
+        icon: '🔄',
+        iconColor: '#22c55e',
+        title: 'indium.email.renew.title'|trans,
+        message: 'indium.email.renew.subtitle'|trans
+    } %}
+
+    {% include 'email/components/alert.html.twig' with {
+        type: 'success',
+        message: 'indium.email.renew.server_renewed'|trans ~ ' ' ~ 'indium.email.renew.new_expiration'|trans ~ ' ' ~ server.expiresAt|app_date
+    } %}
+
+    {% include 'email/components/divider.html.twig' %}
+
+    <h3 style="margin: 0 0 16px; font-size: 18px; font-weight: 600; color: #1a1a1a;">
+        {{ 'indium.email.store.product_details'|trans }}
+    </h3>
+    {% include 'email/components/table.html.twig' with {
+        rows: [
+            {label: 'indium.email.store.product_name'|trans, value: product.name},
+            {label: 'indium.email.store.product_price'|trans, value: priceCalculation.formattedDescription}
+        ]
+    } %}
+
+    {% include 'email/components/divider.html.twig' %}
+
+    <h3 style="margin: 0 0 16px; font-size: 18px; font-weight: 600; color: #1a1a1a;">
+        {{ 'indium.email.store.server_details'|trans }}
+    </h3>
+    {% set serverRows = [
+        {label: 'indium.email.store.ip_address'|trans, value: server.ip},
+        {label: 'indium.email.store.management_panel'|trans, value: '<a href="' ~ panel.url ~ '" style="color: #3b82f6;">' ~ panel.url ~ '</a>'}
+    ] %}
+    {% if use_pterodactyl_panel_as_client_panel() and not is_pterodactyl_sso_enabled() %}
+        {% set serverRows = serverRows|merge([
+            {label: 'indium.email.store.panel_username'|trans, value: panel.username},
+            {label: 'indium.email.store.panel_password'|trans, value: 'indium.email.store.panel_password_hint'|trans}
+        ]) %}
+    {% endif %}
+    {% include 'email/components/table.html.twig' with {
+        rows: serverRows
+    } %}
+
+    {% include 'email/components/button.html.twig' with {
+        url: panel.url,
+        text: 'indium.email.store.access_panel'|trans
+    } %}
+
+    <p style="text-align: center; color: #6b7280; font-size: 14px; margin: 16px 0 0;">
+        {{ 'indium.email.store.management_panel_hint'|trans }}
+    </p>
+{% endblock %}

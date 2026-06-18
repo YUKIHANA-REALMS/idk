@@ -1,0 +1,461 @@
+﻿{% extends '@EasyAdmin/layout.html.twig' %}
+
+{% block content_header_wrapper %}
+    <div class="dashboard-header rounded-3 p-4 mb-4 mt-4">
+        <div class="container-fluid">
+            <div class="d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center">
+                    <div class="bg-primary rounded-circle me-3">
+                        <i class="fas fa-puzzle-piece p-3 text-white"></i>
+                    </div>
+                    <div>
+                        <h4 class="mb-1 fw-bold">{{ plugin.displayName }}</h4>
+                        <p class="text-muted mb-0">{{ 'indium.crud.plugin.plugin_details'|trans }}</p>
+                    </div>
+                </div>
+                <div class="d-flex gap-2">
+                    {# Back to list button #}
+                    <a href="{{ ea_url({ crudAction: 'index', crudControllerFqcn: 'App\\Core\\Controller\\Panel\\Setting\\PluginCrudController' }) }}"
+                       class="btn secondary">
+                        <i class="fa fa-arrow-left"></i> {{ 'indium.crud.plugin.back_to_list'|trans }}
+                    </a>
+
+                    {# Dynamic actions from controller #}
+                    {% if plugin_actions is defined %}
+                        {% for action in plugin_actions %}
+                            <a href="{{ action.url }}"
+                               class="btn {{ action.class }}"
+                               {% if action.data_attrs is defined %}
+                                   {% for attr, value in action.data_attrs %}
+                                       data-{{ attr }}="{{ value }}"
+                                   {% endfor %}
+                               {% endif %}>
+                                <i class="{{ action.icon }}"></i> {{ action.label }}
+                            </a>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block main %}
+    <div class="card border-0 shadow-sm rounded-3">
+        <div class="card-body p-4">
+            <div class="row align-items-stretch">
+                <div class="col-md-6 d-flex flex-column">
+                    <h5 class="mb-3">{{ 'indium.crud.plugin.basic_information'|trans }}</h5>
+                    <table class="table table-borderless flex-grow-1">
+                        <tbody>
+                        <tr>
+                            <th style="width: 40%;">{{ 'indium.crud.plugin.name_label'|trans }}</th>
+                            <td><code>{{ plugin.name }}</code></td>
+                        </tr>
+                        <tr>
+                            <th>{{ 'indium.crud.plugin.display_name_label'|trans }}</th>
+                            <td>{{ plugin.displayName }}</td>
+                        </tr>
+                        <tr>
+                            <th>{{ 'indium.crud.plugin.version_label'|trans }}</th>
+                            <td><span class="badge bg-info">{{ plugin.version }}</span></td>
+                        </tr>
+                        <tr>
+                            <th>{{ 'indium.crud.plugin.author_label'|trans }}</th>
+                            <td>{{ plugin.author }}</td>
+                        </tr>
+                        <tr>
+                            <th>{{ 'indium.crud.plugin.description_label'|trans }}</th>
+                            <td>{{ plugin.description|default('indium.crud.plugin.no_description_provided'|trans) }}</td>
+                        </tr>
+                        <tr>
+                            <th>{{ 'indium.crud.plugin.state_label'|trans }}</th>
+                            <td>
+                                <span class="badge bg-{{ plugin.state.badgeClass }}">
+                                    {{ plugin.state.label|trans }}
+                                </span>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="col-md-6 d-flex flex-column">
+                    <h5 class="mb-3">{{ 'indium.crud.plugin.technical_details'|trans }}</h5>
+                    <table class="table table-borderless flex-grow-1">
+                        <tbody>
+                        <tr>
+                            <th style="width: 40%;">{{ 'indium.crud.plugin.capabilities_label'|trans }}</th>
+                            <td>
+                                {% if plugin.capabilities|length > 0 %}
+                                    <div class="d-flex flex-wrap gap-2">
+                                        {% for capability in plugin.capabilities %}
+                                            <span class="badge bg-secondary">{{ capability }}</span>
+                                        {% endfor %}
+                                    </div>
+                                {% else %}
+                                    <em>{{ 'indium.crud.plugin.none'|trans }}</em>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>{{ 'indium.crud.plugin.min_indium_version_label'|trans }}</th>
+                            <td>
+                                {% if plugin.indiumMinVersion %}
+                                    <span class="badge bg-info">{{ plugin.indiumMinVersion }}</span>
+                                {% else %}
+                                    <em>{{ 'indium.crud.plugin.not_specified'|trans }}</em>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>{{ 'indium.crud.plugin.max_indium_version_label'|trans }}</th>
+                            <td>
+                                {% if plugin.indiumMaxVersion %}
+                                    <span class="badge bg-info">{{ plugin.indiumMaxVersion }}</span>
+                                {% else %}
+                                    <em>{{ 'indium.crud.plugin.not_specified'|trans }}</em>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% if plugin.enabledAt %}
+                            <tr>
+                                <th>{{ 'indium.crud.plugin.enabled_at_label'|trans }}</th>
+                                <td>{{ plugin.enabledAt|app_date }}</td>
+                            </tr>
+                        {% endif %}
+                        {% if plugin.disabledAt %}
+                            <tr>
+                                <th>{{ 'indium.crud.plugin.disabled_at_label'|trans }}</th>
+                                <td>{{ plugin.disabledAt|app_date }}</td>
+                            </tr>
+                        {% endif %}
+                        {% if plugin.faultReason %}
+                            <tr>
+                                <th>{{ 'indium.crud.plugin.fault_reason_label'|trans }}</th>
+                                <td class="text-danger">{{ plugin.faultReason }}</td>
+                            </tr>
+                        {% endif %}
+                        {% if plugin.createdAt %}
+                            <tr>
+                                <th>{{ 'indium.crud.plugin.created_at_label'|trans }}</th>
+                                <td>{{ plugin.createdAt|app_date }}</td>
+                            </tr>
+                        {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            {% if plugin.state.value == 'faulted' and plugin.faultReason %}
+                <div class="alert alert-danger mt-4" role="alert">
+                    <h5 class="alert-heading">
+                        <i class="fa fa-exclamation-triangle"></i> {{ 'indium.crud.plugin.plugin_error'|trans }}
+                    </h5>
+                    <p class="mb-0">{{ plugin.faultReason }}</p>
+                </div>
+            {% endif %}
+
+            {% if plugin.state.value == 'update_pending' %}
+                <div class="alert alert-warning mt-4" role="alert">
+                    <h5 class="alert-heading">
+                        <i class="fa fa-info-circle"></i> {{ 'indium.crud.plugin.update_available'|trans }}
+                    </h5>
+                    <p class="mb-0">{{ 'indium.crud.plugin.update_available_message'|trans }}</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    {# Dependencies Section #}
+    {% if dependencies|length > 0 %}
+        <div class="card border-0 shadow-sm rounded-3 mt-4">
+            <div class="card-header bg-light">
+                <h5 class="mb-0">
+                    <i class="fa fa-link"></i> {{ 'indium.crud.plugin.dependencies'|trans }}
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if hasCircularDependency %}
+                    <div class="alert alert-danger">
+                        <i class="fa fa-exclamation-circle"></i>
+                        <strong>{{ 'indium.crud.plugin.circular_dependency_detected'|trans }}</strong><br>
+                        {{ circularDependencyPath|join(' → ') }}
+                    </div>
+                {% endif %}
+
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>{{ 'indium.crud.plugin.required_plugin'|trans }}</th>
+                            <th>{{ 'indium.crud.plugin.version_constraint'|trans }}</th>
+                            <th>{{ 'indium.crud.plugin.installed_version'|trans }}</th>
+                            <th>{{ 'indium.crud.plugin.status'|trans }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for dep in dependencies %}
+                            <tr>
+                                <td>
+                                    <code>{{ dep.name }}</code>
+                                    {% if dep.plugin %}
+                                        <br><small class="text-muted">{{ dep.plugin.displayName }}</small>
+                                    {% endif %}
+                                </td>
+                                <td><span class="badge bg-secondary">{{ dep.constraint }}</span></td>
+                                <td>
+                                    {% if dep.installed %}
+                                        <span class="badge bg-info">{{ dep.version }}</span>
+                                    {% else %}
+                                        <span class="badge bg-danger">{{ 'indium.crud.plugin.not_installed'|trans }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if not dep.installed %}
+                                        <span class="badge bg-danger">
+                                            <i class="fa fa-times"></i> {{ 'indium.crud.plugin.missing'|trans }}
+                                        </span>
+                                    {% elseif not dep.enabled %}
+                                        <span class="badge bg-warning">
+                                            <i class="fa fa-pause"></i> {{ 'indium.crud.plugin.not_enabled'|trans }}
+                                        </span>
+                                    {% elseif not dep.compatible %}
+                                        <span class="badge bg-danger">
+                                            <i class="fa fa-exclamation-triangle"></i> {{ 'indium.crud.plugin.incompatible_version'|trans }}
+                                        </span>
+                                    {% else %}
+                                        <span class="badge bg-success">
+                                            <i class="fa fa-check"></i> {{ 'indium.crud.plugin.satisfied'|trans }}
+                                        </span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    {% endif %}
+
+    {# Health Status Section #}
+    {% if healthCheckResult is not null %}
+        <div class="card border-0 shadow-sm rounded-3 mt-4">
+            <div class="card-header bg-light">
+                <h5 class="mb-0">
+                    <i class="fa fa-heartbeat {{ healthCheckResult.healthy ? 'text-success' : 'text-danger' }}"></i>
+                    {{ 'indium.plugin.health.health_status'|trans }}
+                    <span class="badge {{ healthCheckResult.healthy ? 'bg-success' : 'bg-danger' }} ms-2">
+                        {{ healthCheckResult.healthPercentage|number_format(0) }}%
+                    </span>
+                </h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>{{ 'indium.plugin.health.check'|trans }}</th>
+                            <th>{{ 'indium.plugin.health.status'|trans }}</th>
+                            <th>{{ 'indium.plugin.health.error_details'|trans }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for checkName, passed in healthCheckResult.checks %}
+                            <tr>
+                                <td>
+                                    {% if checkName == 'files_integrity' %}
+                                        {{ 'indium.plugin.health.files_integrity'|trans }}
+                                    {% elseif checkName == 'dependencies' %}
+                                        {{ 'indium.plugin.health.dependencies'|trans }}
+                                    {% elseif checkName == 'configuration' %}
+                                        {{ 'indium.plugin.health.configuration'|trans }}
+                                    {% elseif checkName == 'service_registration' %}
+                                        {{ 'indium.plugin.health.service_registration'|trans }}
+                                    {% else %}
+                                        {{ checkName }}
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if passed %}
+                                        <span class="badge bg-success">
+                                            <i class="fa fa-check me-1"></i> {{ 'indium.plugin.health.passed'|trans }}
+                                        </span>
+                                    {% else %}
+                                        <span class="badge bg-danger">
+                                            <i class="fa fa-times me-1"></i> {{ 'indium.plugin.health.failed'|trans }}
+                                        </span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if not passed and healthCheckResult.errors[checkName] is defined %}
+                                        <small class="text-danger">{{ healthCheckResult.errors[checkName] }}</small>
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    {% endif %}
+
+    {# Security Status Section #}
+    {% if securityCheckResult is not null %}
+        <div class="card border-0 shadow-sm rounded-3 mt-4">
+            <div class="card-header bg-light">
+                <h5 class="mb-0">
+                    <i class="fa fa-shield-alt {{ securityCheckResult.secure ? 'text-success' : 'text-danger' }}"></i>
+                    {{ 'indium.plugin.security.security_status'|trans }}
+                    <span class="badge {{ securityCheckResult.secure ? 'bg-success' : 'bg-danger' }} ms-2">
+                        {{ securityCheckResult.securityPercentage|number_format(0) }}%
+                    </span>
+                </h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>{{ 'indium.plugin.health.check'|trans }}</th>
+                            <th>{{ 'indium.plugin.health.status'|trans }}</th>
+                            <th>{{ 'indium.plugin.security.issues'|trans }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for checkName, passed in securityCheckResult.checks %}
+                            <tr>
+                                <td>
+                                    {{ ('indium.plugin.security.check.' ~ checkName)|trans }}
+                                </td>
+                                <td>
+                                    {% if passed %}
+                                        <span class="badge bg-success">
+                                            <i class="fa fa-check me-1"></i> {{ 'indium.plugin.health.passed'|trans }}
+                                        </span>
+                                    {% else %}
+                                        <span class="badge bg-danger">
+                                            <i class="fa fa-times me-1"></i> {{ 'indium.plugin.health.failed'|trans }}
+                                        </span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% set issueCount = securityCheckResult.getIssueCountByType(checkName) %}
+                                    {% if issueCount > 0 %}
+                                        <span class="badge bg-danger">{{ issueCount }}</span>
+                                    {% else %}
+                                        <span class="text-muted">0</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+                {# Show detailed issues if any exist #}
+                {% if not securityCheckResult.secure %}
+                    <div class="mt-4">
+                        <h6>{{ 'indium.plugin.security.total_issues_found'|trans }}: {{ securityCheckResult.totalIssues }}</h6>
+                        <table class="table table-hover mt-3">
+                            <thead>
+                                <tr>
+                                    <th>{{ 'indium.plugin.security.severity'|trans }}</th>
+                                    <th>{{ 'indium.plugin.security.type'|trans }}</th>
+                                    <th>{{ 'indium.plugin.security.file'|trans }}</th>
+                                    <th>{{ 'indium.plugin.security.line'|trans }}</th>
+                                    <th>{{ 'indium.plugin.security.message'|trans }}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for issue in securityCheckResult.issues %}
+                                    <tr>
+                                        <td>
+                                            {% if issue.severity == 'critical' %}
+                                                <span class="badge bg-danger">
+                                                    <i class="fa fa-exclamation-circle"></i> {{ 'indium.plugin.security.critical'|trans|upper }}
+                                                </span>
+                                            {% elseif issue.severity == 'high' %}
+                                                <span class="badge bg-warning">
+                                                    <i class="fa fa-exclamation-triangle"></i> {{ 'indium.plugin.security.high'|trans|upper }}
+                                                </span>
+                                            {% elseif issue.severity == 'medium' %}
+                                                <span class="badge bg-info">{{ 'indium.plugin.security.medium'|trans|upper }}</span>
+                                            {% else %}
+                                                <span class="badge bg-secondary">{{ 'indium.plugin.security.low'|trans|upper }}</span>
+                                            {% endif %}
+                                        </td>
+                                        <td><code>{{ issue.type }}</code></td>
+                                        <td>
+                                            {% if issue.file is defined %}
+                                                <small>{{ issue.file }}</small>
+                                            {% else %}
+                                                -
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if issue.line is defined %}
+                                                {{ issue.line }}
+                                            {% else %}
+                                                -
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ issue.message }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    {% endif %}
+
+    {# Dependents Section #}
+    {% if dependents|length > 0 %}
+        <div class="card border-0 shadow-sm rounded-3 border-warning mt-4">
+            <div class="card-header bg-warning bg-opacity-10">
+                <h5 class="mb-0">
+                    <i class="fa fa-exclamation-triangle text-warning"></i> {{ 'indium.crud.plugin.dependent_plugins'|trans }}
+                </h5>
+                <small class="text-muted">
+                    {{ 'indium.crud.plugin.dependents_warning'|trans }}
+                </small>
+            </div>
+            <div class="card-body">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>{{ 'indium.crud.plugin.plugin_name'|trans }}</th>
+                            <th>{{ 'indium.crud.plugin.version_constraint'|trans }}</th>
+                            <th>{{ 'indium.crud.plugin.current_state'|trans }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for dependent in dependents %}
+                            <tr>
+                                <td>
+                                    <strong>{{ dependent.displayName }}</strong><br>
+                                    <small class="text-muted"><code>{{ dependent.name }}</code></small>
+                                </td>
+                                <td>
+                                    <span class="badge bg-secondary">
+                                        {{ dependent.requires[plugin.name] ?? '*' }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-{{ dependent.state.badgeClass }}">
+                                        {{ dependent.state.label|trans }}
+                                    </span>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    {% endif %}
+
+    {# Delete Plugin Confirmation Modal #}
+    {% if plugin.id is not null and app.user.hasPermission(constant('App\\Core\\Enum\\PermissionEnum::UNINSTALL_PLUGIN')) %}
+        {% include 'panel/crud/plugin/components/delete-modal.html.twig' %}
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,45 @@
+﻿{% extends 'email/layout/base.html.twig' %}
+{% trans_default_domain 'messages' %}
+
+{% set emailTitle = 'indium.email.suspended.subject'|trans %}
+
+{% block content %}
+    {% include 'email/components/icon_section.html.twig' with {
+        icon: '⚠',
+        iconColor: '#f59e0b',
+        title: 'indium.email.suspended.subject'|trans,
+        message: 'indium.email.suspended.subtitle'|trans
+    } %}
+
+    {% include 'email/components/alert.html.twig' with {
+        type: 'danger',
+        message: 'indium.email.suspended.server_suspended'|trans
+    } %}
+
+    {% include 'email/components/table.html.twig' with {
+        rows: [
+            {label: 'indium.email.suspended.server_details'|trans, value: '<strong>' ~ serverName ~ '</strong>'},
+            {label: 'indium.email.suspended.suspension_date_label'|trans, value: suspensionDate|app_date}
+        ]
+    } %}
+
+    {% if autoDeleteEnabled and deleteAfterDays and deleteDate %}
+        {% include 'email/components/alert.html.twig' with {
+            type: 'warning',
+            title: 'indium.email.suspended.auto_delete_title'|trans,
+            message: 'indium.email.suspended.auto_delete_warning'|trans({
+                '%days%': deleteAfterDays,
+                '%deleteDate%': deleteDate|app_date
+            })
+        } %}
+    {% endif %}
+
+    <p style="text-align: center; color: #374151; font-size: 16px; margin: 24px 0;">
+        {{ 'indium.email.suspended.extend_server'|trans }}
+    </p>
+
+    {% include 'email/components/button.html.twig' with {
+        url: panelUrl,
+        text: 'indium.email.suspended.panel_access'|trans
+    } %}
+{% endblock %}

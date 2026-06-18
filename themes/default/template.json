@@ -1,0 +1,17 @@
+{
+  "template": {
+    "name": "default",
+    "description": "Default template for Indium Panel",
+    "author": "Aryan Dwivedi",
+    "version": "1.0.0",
+    "license": "MIT",
+    "indiumVersion": "1.0.0",
+    "phpVersion": ">=8.2",
+    "contexts": ["panel", "landing", "email"],
+    "translations": [],
+    "options": {
+      "supportDarkMode": true,
+      "supportCustomColors": true
+    }
+  }
+}

@@ -1,0 +1,29 @@
+﻿{% extends 'email/layout/base.html.twig' %}
+{% trans_default_domain 'messages' %}
+
+{% set emailTitle = 'indium.email.payment.subject'|trans %}
+
+{% block content %}
+    {% include 'email/components/icon_section.html.twig' with {
+        icon: '✓',
+        iconColor: '#22c55e',
+        title: 'indium.email.payment.title'|trans,
+        message: 'indium.email.payment.subtitle'|trans
+    } %}
+
+    {% include 'email/components/alert.html.twig' with {
+        type: 'success',
+        message: 'indium.email.payment.payment_received'|trans ~ ' ' ~ amount|format_price ~ ' ' ~ currency|upper ~ '.'
+    } %}
+
+    {% include 'email/components/table.html.twig' with {
+        rows: [
+            {label: 'indium.email.payment.amount_paid'|trans, value: amount|format_price ~ ' ' ~ currency|upper},
+            {label: 'indium.email.payment.new_balance'|trans, value: amount|format_price ~ ' ' ~ internalCurrency}
+        ]
+    } %}
+
+    <p style="text-align: center; color: #6b7280; font-size: 14px; margin: 24px 0 0;">
+        {{ 'indium.email.payment.thank_you'|trans }}
+    </p>
+{% endblock %}

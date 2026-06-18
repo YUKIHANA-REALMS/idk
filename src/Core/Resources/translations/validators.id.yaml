@@ -1,0 +1,6 @@
+indium:
+  crud:
+    user:
+      passwords_must_match: 'Kata sandi harus cocok.'
+  register:
+    email_already_exists: 'Akun dengan alamat email tersebut sudah ada.'

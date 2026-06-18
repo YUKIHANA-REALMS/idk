@@ -1,0 +1,50 @@
+
+###> symfony/framework-bundle ###
+/.env
+/.env.local
+/.env.local.php
+/.env.*.local
+/config/secrets/prod/prod.decrypt.private.php
+/public/bundles/
+/public/uploads/**/*
+!public/uploads/**/.gitkeep
+/public/plugins/**/*
+!public/plugins/.gitkeep
+/var/
+/vendor/
+/.idea
+###< symfony/framework-bundle ###
+
+###> symfony/phpunit-bridge ###
+.phpunit.result.cache
+/phpunit.xml
+###< symfony/phpunit-bridge ###
+
+###> phpunit/phpunit ###
+/phpunit.xml
+.phpunit.result.cache
+junit.xml
+###< phpunit/phpunit ###
+
+###> phpstan/phpstan ###
+phpstan.neon
+###< phpstan/phpstan ###
+
+###> indium/plugin-system ###
+# Ignore plugin contents but track the structure
+/plugins/*/
+!plugins/.gitkeep
+###< indium/plugin-system ###
+
+###> indium/theme-system ###
+# Ignore custom themes but track default theme
+/themes/*/
+!themes/default/
+/public/assets/theme/*/
+!public/assets/theme/default/
+###< indium/theme-system ###
+
+###> custom ###
+CLAUDE.md
+docs/
+###< custom ###

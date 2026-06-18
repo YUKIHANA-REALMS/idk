@@ -1,0 +1,41 @@
+﻿{% extends 'email/layout/base.html.twig' %}
+{% trans_default_domain 'messages' %}
+
+{% set emailTitle = 'indium.email.admin_server_created.subject'|trans %}
+
+{% block content %}
+    {% include 'email/components/icon_section.html.twig' with {
+        icon: '🖥',
+        iconColor: '#3b82f6',
+        title: 'indium.email.admin_server_created.title'|trans,
+        message: 'indium.email.admin_server_created.subtitle'|trans
+    } %}
+
+    {% include 'email/components/alert.html.twig' with {
+        type: 'success',
+        message: '<strong>' ~ server.name ~ '</strong>'
+    } %}
+
+    {% include 'email/components/divider.html.twig' %}
+
+    <h3 style="margin: 0 0 16px; font-size: 18px; font-weight: 600; color: #1a1a1a;">
+        {{ 'indium.email.admin_server_created.server_details'|trans }}
+    </h3>
+    {% include 'email/components/table.html.twig' with {
+        rows: [
+            {label: 'indium.email.admin_server_created.server_name'|trans, value: '<strong>' ~ server.name ~ '</strong>'},
+            {label: 'indium.email.admin_server_created.product_name'|trans, value: product.name},
+            {label: 'indium.email.admin_server_created.expires_at'|trans, value: server.expiresAt|app_date},
+            {label: 'indium.email.admin_server_created.panel_url'|trans, value: '<a href="' ~ panel.url ~ '" style="color: #3b82f6;">' ~ panel.url ~ '</a>'}
+        ]
+    } %}
+
+    {% include 'email/components/button.html.twig' with {
+        url: panel.url,
+        text: 'indium.email.admin_server_created.access_panel'|trans
+    } %}
+
+    <p style="text-align: center; color: #6b7280; font-size: 14px; margin: 16px 0 0;">
+        {{ 'indium.email.admin_server_created.note'|trans }}
+    </p>
+{% endblock %}
