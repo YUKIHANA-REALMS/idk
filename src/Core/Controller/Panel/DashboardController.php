@@ -157,7 +157,7 @@ class DashboardController extends AbstractDashboardController
         } else {
             $logoUrl = '/assets/img/logo/logo.png';
         }
-        $logo = sprintf('<img src="%s" alt="%s" style="max-width: 90%%;">', $logoUrl, $title);
+        $logo = sprintf('<img src="%s" alt="%s" class="panel-logo" style="max-width: 90%%;">', $logoUrl, $title);
 
         $currentTemplateOptions = $this->templateManager->getCurrentTemplateOptions();
         $disableDarkMode = !$currentTemplateOptions->isSupportDarkMode()

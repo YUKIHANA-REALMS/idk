@@ -220,6 +220,16 @@
     width: 95%;
 }
 
+/* Logo: white logo on dark sidebar, auto-invert for light sidebar */
+.main-header .panel-logo {
+    max-width: 90%;
+}
+
+/* Light mode: make white logo dark */
+body:not(.ea-dark-scheme) .main-header .panel-logo {
+    filter: brightness(0);
+}
+
 .panel-login-logo {
     width: 90%;
     margin-left: 5%;
