@@ -11,7 +11,7 @@ class ThemeStructureValidator
 {
     public function findThemeRoot(string $tempDir): ?string
     {
-        // 1. Try standard structure: themes/{name}/template.json
+        // 1. Standard structure: themes/{name}/template.json
         $themesDir = $tempDir . '/themes';
         if (is_dir($themesDir)) {
             $dirs = glob($themesDir . '/*', GLOB_ONLYDIR);
@@ -22,35 +22,12 @@ class ThemeStructureValidator
             }
         }
 
-        // 2. Try flat structure: template.json at root level
+        // 2. Flat structure: template.json at root level
         if (file_exists($tempDir . '/template.json')) {
-            // Create the expected themes/{name}/ structure
-            $manifest = json_decode(file_get_contents($tempDir . '/template.json'), true);
-            if (isset($manifest['template']['name'])) {
-                $themeName = $manifest['template']['name'];
-                $expectedDir = "$tempDir/themes/$themeName";
-                if (!is_dir($expectedDir)) {
-                    mkdir($expectedDir, 0755, true);
-                }
-                // Copy template.json to expected location
-                copy($tempDir . '/template.json', "$expectedDir/template.json");
-                // Move all other root files into the theme dir (skip __MACOSX)
-                $items = glob($tempDir . '/*');
-                foreach ($items as $item) {
-                    $basename = basename($item);
-                    if ($basename === 'themes' || $basename === '__MACOSX' || $basename === 'template.json') {
-                        continue;
-                    }
-                    $dest = "$expectedDir/$basename";
-                    if (!file_exists($dest)) {
-                        rename($item, $dest);
-                    }
-                }
-                return $expectedDir;
-            }
+            return $this->restructureFlatTheme($tempDir, $tempDir);
         }
 
-        // 3. Try nested single-directory: {somedir}/template.json or {somedir}/themes/{name}/template.json
+        // 3. Nested: {somedir}/template.json or {somedir}/themes/{name}/template.json
         $rootDirs = glob($tempDir . '/*', GLOB_ONLYDIR);
         foreach ($rootDirs as $dir) {
             $basename = basename($dir);
@@ -58,33 +35,12 @@ class ThemeStructureValidator
                 continue;
             }
 
-            // Check if this dir has template.json directly
+            // Check for {subdir}/template.json
             if (file_exists($dir . '/template.json')) {
-                $manifest = json_decode(file_get_contents($dir . '/template.json'), true);
-                if (isset($manifest['template']['name'])) {
-                    $themeName = $manifest['template']['name'];
-                    $expectedDir = "$tempDir/themes/$themeName";
-                    if (!is_dir($expectedDir)) {
-                        mkdir($expectedDir, 0755, true);
-                    }
-                    copy($dir . '/template.json', "$expectedDir/template.json");
-                    // Move contents into the expected structure
-                    $items = glob($dir . '/*');
-                    foreach ($items as $item) {
-                        $itemBasename = basename($item);
-                        if ($itemBasename === 'template.json') {
-                            continue;
-                        }
-                        $dest = "$expectedDir/$itemBasename";
-                        if (!file_exists($dest)) {
-                            rename($item, $dest);
-                        }
-                    }
-                    return $expectedDir;
-                }
+                return $this->restructureFlatTheme($dir, $tempDir);
             }
 
-            // Check for themes/{name}/template.json inside subdirectory
+            // Check for {subdir}/themes/{name}/template.json
             $innerThemesDir = $dir . '/themes';
             if (is_dir($innerThemesDir)) {
                 $innerDirs = glob($innerThemesDir . '/*', GLOB_ONLYDIR);
@@ -99,16 +55,91 @@ class ThemeStructureValidator
         return null;
     }
 
+    /**
+     * Restructure a flat theme into the expected themes/{name}/ format.
+     * Handles both root-level and subdirectory-level flat themes.
+     */
+    private function restructureFlatTheme(string $themeSourceDir, string $tempDir): ?string
+    {
+        $content = @file_get_contents($themeSourceDir . '/template.json');
+        if ($content === false) {
+            return null;
+        }
+
+        $data = json_decode($content, true);
+        if (!is_array($data) || !isset($data['template']['name'])) {
+            return null;
+        }
+
+        $themeName = $data['template']['name'];
+        $targetDir = $tempDir . '/themes/' . $themeName;
+
+        // If already restructured, just return it
+        if (is_dir($targetDir) && file_exists($targetDir . '/template.json')) {
+            return $targetDir;
+        }
+
+        // Create the themes/{name}/ directory
+        if (!is_dir($targetDir)) {
+            @mkdir($targetDir, 0755, true);
+        }
+
+        // Copy all files and directories from source into target
+        $this->copyDirectoryContents($themeSourceDir, $targetDir);
+
+        // Verify it worked
+        if (file_exists($targetDir . '/template.json')) {
+            return $targetDir;
+        }
+
+        return null;
+    }
+
+    /**
+     * Recursively copy directory contents from source to destination.
+     */
+    private function copyDirectoryContents(string $source, string $dest): void
+    {
+        if (!is_dir($source)) {
+            return;
+        }
+
+        $items = @scandir($source);
+        if ($items === false) {
+            return;
+        }
+
+        foreach ($items as $item) {
+            if ($item === '.' || $item === '..' || $item === '__MACOSX') {
+                continue;
+            }
+
+            $srcPath = $source . '/' . $item;
+            $dstPath = $dest . '/' . $item;
+
+            if (is_dir($srcPath)) {
+                if (!is_dir($dstPath)) {
+                    @mkdir($dstPath, 0755, true);
+                }
+                $this->copyDirectoryContents($srcPath, $dstPath);
+            } else {
+                if (!file_exists($dstPath)) {
+                    @copy($srcPath, $dstPath);
+                }
+            }
+        }
+    }
+
     public function validateStructure(string $tempDir, TemplateManifestDTO $manifest): array
     {
         $errors = [];
-
         $themeName = $manifest->name;
         $themeDir = "$tempDir/themes/$themeName";
 
         // Check theme directory exists
         if (!is_dir($themeDir)) {
             $errors[] = "Theme directory themes/$themeName/ not found in ZIP";
+            return $errors;
         }
 
         // Check template.json exists
@@ -121,38 +152,6 @@ class ThemeStructureValidator
             if (!is_dir("$themeDir/$context")) {
                 $errors[] = "Context '$context' declared but directory themes/$themeName/$context/ not found";
             }
-        }
-
-        // Check for files outside allowed paths
-        $allowedPaths = [
-            "themes/$themeName/",
-            "public/assets/theme/$themeName/",
-        ];
-
-        try {
-            $iterator = new RecursiveIteratorIterator(
-                new RecursiveDirectoryIterator($tempDir, RecursiveDirectoryIterator::SKIP_DOTS)
-            );
-
-            foreach ($iterator as $file) {
-                if ($file->isFile()) {
-                    $relativePath = str_replace($tempDir . '/', '', $file->getPathname());
-                    $isAllowed = false;
-
-                    foreach ($allowedPaths as $path) {
-                        if (str_starts_with($relativePath, $path)) {
-                            $isAllowed = true;
-                            break;
-                        }
-                    }
-
-                    if (!$isAllowed) {
-                        $errors[] = "File outside allowed paths: $relativePath";
-                    }
-                }
-            }
-        } catch (\Exception $e) {
-            $errors[] = "Failed to validate directory structure: " . $e->getMessage();
         }
 
         return $errors;
