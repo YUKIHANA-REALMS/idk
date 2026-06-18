@@ -31,7 +31,7 @@ class TemplateManifestDTO
             author: $data['author'] ?? '',
             version: $data['version'] ?? '',
             license: $data['license'] ?? '',
-            indiumVersion: $data['indiumVersion'] ?? '',
+            indiumVersion: $data['indiumVersion'] ?? $data['indiumpanelVersion'] ?? $data['indiumPanelVersion'] ?? '',
             phpVersion: $data['phpVersion'] ?? '',
             contexts: $data['contexts'] ?? [],
             translations: $data['translations'] ?? [],
