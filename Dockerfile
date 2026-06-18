@@ -70,7 +70,7 @@ RUN echo "* * * * * www-data php /app/bin/console indium:cron:schedule >> /dev/n
     && crontab -u www-data /etc/cron.d/indium-cron
 
 # Set permissions on directories that need write access
-RUN mkdir -p var/log var/cache public/uploads plugins themes \
+RUN mkdir -p var/log var/cache public/uploads public/uploads/avatars public/uploads/settings public/uploads/categories public/uploads/products plugins themes \
     && chown -R www-data:www-data var public/uploads plugins themes \
     && chmod -R 775 var public/uploads plugins themes
 
