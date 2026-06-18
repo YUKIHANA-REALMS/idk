@@ -2000,3 +2000,15 @@ indium:
       newest: 'Newest'
       popular: 'Most Downloaded'
       rating: 'Top Rated'
+  crud:
+    landing_page:
+      management: 'Landing Page'
+      management_description: 'Customize your landing page sections, styling, and content'
+      view_live: 'View Live'
+      section_type: 'Section'
+      section_title: 'Title'
+      status: 'Status'
+      actions: 'Actions'
+      edit_section: 'Edit %section%'
+      section_saved: 'Section saved successfully'
+      section_toggled: 'Section status updated'

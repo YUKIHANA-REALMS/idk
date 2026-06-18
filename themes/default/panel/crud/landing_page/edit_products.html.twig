@@ -1,0 +1,107 @@
+{% extends '@EasyAdmin/layout.html.twig' %}
+
+{% block content_header_wrapper %}
+    <div class="dashboard-header rounded-3 p-4 mb-4 mt-4">
+        <div class="container-fluid">
+            <div class="d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center">
+                    <div class="bg-primary rounded-circle me-3"><i class="fas fa-box p-3 text-white"></i></div>
+                    <div><h4 class="mb-1 fw-bold">Edit Products Section</h4><p class="text-muted mb-0">Configure product card styling</p></div>
+                </div>
+                <a href="{{ ea_url({ crudAction: 'index', crudControllerFqcn: 'App\\Core\\Controller\\Panel\\Setting\\LandingPageController' }) }}" class="btn secondary p-3"><i class="fa fa-arrow-left"></i> Back</a>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block main %}
+<form method="post" action="{{ ea_url({ crudAction: 'updateSection', crudControllerFqcn: 'App\\Core\\Controller\\Panel\\Setting\\LandingPageController' }) }}">
+    <input type="hidden" name="sectionType" value="{{ section_type }}">
+
+    <div class="card border-0 shadow-sm rounded-3 mb-4">
+        <div class="card-header bg-white border-bottom"><h5 class="mb-0 fw-bold">Section Header</h5></div>
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-6"><label class="form-label fw-semibold">Title</label><input type="text" name="content[title]" class="form-control" value="{{ content.title|default('') }}"></div>
+                <div class="col-md-6"><label class="form-label fw-semibold">Subtitle</label><input type="text" name="content[subtitle]" class="form-control" value="{{ content.subtitle|default('') }}"></div>
+                <div class="col-md-4"><label class="form-label fw-semibold">Background Color</label><div class="input-group"><input type="color" name="content[background_color]" class="form-control form-control-color" value="{{ content.background_color|default('#000000') }}"></div></div>
+                <div class="col-md-4"><label class="form-label fw-semibold">Text Color</label><div class="input-group"><input type="color" name="content[text_color]" class="form-control form-control-color" value="{{ content.text_color|default('#ffffff') }}"></div></div>
+                <div class="col-md-4"><label class="form-label fw-semibold">Layout</label><select name="content[layout]" class="form-select"><option value="grid" {{ content.layout|default('grid') == 'grid' ? 'selected' : '' }}>Grid</option><option value="carousel" {{ content.layout|default('') == 'carousel' ? 'selected' : '' }}>Carousel</option></select></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-3 mb-4">
+        <div class="card-header bg-white border-bottom"><h5 class="mb-0 fw-bold">Card Styling</h5></div>
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold">Card Style</label>
+                    <select name="content[card_style]" class="form-select">
+                        <option value="rounded" {{ content.card_style|default('rounded') == 'rounded' ? 'selected' : '' }}>Rounded Corners</option>
+                        <option value="sharp" {{ content.card_style|default('') == 'sharp' ? 'selected' : '' }}>Sharp Corners</option>
+                        <option value="pill" {{ content.card_style|default('') == 'pill' ? 'selected' : '' }}>Pill</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold">Border Radius</label>
+                    <input type="text" name="content[card_border_radius]" class="form-control" value="{{ content.card_border_radius|default('16px') }}" placeholder="16px">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold">Card Background</label>
+                    <div class="input-group"><input type="color" name="content[card_background]" class="form-control form-control-color" value="{{ content.card_background|default('#0a0a0a') }}"></div>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold">Border Color</label>
+                    <div class="input-group"><input type="color" name="content[card_border_color]" class="form-control form-control-color" value="{{ content.card_border_color|default('#222222') }}"></div>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold">Shadow</label>
+                    <select name="content[card_shadow]" class="form-select">
+                        <option value="1" {{ content.card_shadow|default(true) ? 'selected' : '' }}>Enabled</option>
+                        <option value="0" {{ not (content.card_shadow|default(true)) ? 'selected' : '' }}>Disabled</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold">Shadow Color</label>
+                    <input type="text" name="content[card_shadow_color]" class="form-control" value="{{ content.card_shadow_color|default('rgba(66,135,245,0.15)') }}" placeholder="rgba(66,135,245,0.15)">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold">Shadow Blur</label>
+                    <input type="text" name="content[card_shadow_blur]" class="form-control" value="{{ content.card_shadow_blur|default('20px') }}" placeholder="20px">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold">Hover Effect</label>
+                    <select name="content[card_hover]" class="form-select">
+                        <option value="1" {{ content.card_hover|default(true) ? 'selected' : '' }}>Enabled</option>
+                        <option value="0" {{ not (content.card_hover|default(true)) ? 'selected' : '' }}>Disabled</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold">Hover Scale</label>
+                    <input type="text" name="content[card_hover_scale]" class="form-control" value="{{ content.card_hover_scale|default('1.02') }}" placeholder="1.02">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-3 mb-4">
+        <div class="card-header bg-white border-bottom"><h5 class="mb-0 fw-bold">Button Settings</h5></div>
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-4"><label class="form-label fw-semibold">Button Text</label><input type="text" name="content[button_text]" class="form-control" value="{{ content.button_text|default('Order Now') }}"></div>
+                <div class="col-md-4"><label class="form-label fw-semibold">Button URL</label><input type="text" name="content[button_url]" class="form-control" value="{{ content.button_url|default('/store') }}" placeholder="/store or https://..."></div>
+                <div class="col-md-2"><label class="form-label fw-semibold">Button Color</label><div class="input-group"><input type="color" name="content[button_color]" class="form-control form-control-color" value="{{ content.button_color|default('#4287f5') }}"></div></div>
+                <div class="col-md-2"><label class="form-label fw-semibold">Button Text Color</label><div class="input-group"><input type="color" name="content[button_text_color]" class="form-control form-control-color" value="{{ content.button_text_color|default('#ffffff') }}"></div></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-3 mb-4">
+        <div class="card-body d-flex justify-content-between">
+            <div class="form-check form-switch"><input class="form-check-input" type="checkbox" name="isEnabled" id="isEnabled" {{ section.isEnabled ? 'checked' : '' }}><label class="form-check-label fw-semibold" for="isEnabled">Enabled</label></div>
+            <button type="submit" class="btn primary px-4"><i class="fa fa-save me-2"></i>Save</button>
+        </div>
+    </div>
+</form>
+{% endblock %}

@@ -1,0 +1,76 @@
+{% extends '@EasyAdmin/layout.html.twig' %}
+
+{% block content_header_wrapper %}
+    <div class="dashboard-header rounded-3 p-4 mb-4 mt-4">
+        <div class="container-fluid">
+            <div class="d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center">
+                    <div class="bg-primary rounded-circle me-3">
+                        <i class="fas fa-globe p-3 text-white"></i>
+                    </div>
+                    <div>
+                        <h4 class="mb-1 fw-bold">{{ 'indium.crud.landing_page.management'|trans }}</h4>
+                        <p class="text-muted mb-0">{{ 'indium.crud.landing_page.management_description'|trans }}</p>
+                    </div>
+                </div>
+                <div class="d-flex gap-2">
+                    <a href="{{ path('homepage') }}" target="_blank" class="btn primary p-3">
+                        <i class="fa fa-external-link-alt"></i> {{ 'indium.crud.landing_page.view_live'|trans }}
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block main %}
+<div class="card border-0 shadow-sm rounded-3">
+    <div class="card-body p-0">
+        <table class="table table-striped datagrid mb-0">
+            <thead>
+            <tr>
+                <th width="50">#</th>
+                <th>{{ 'indium.crud.landing_page.section_type'|trans }}</th>
+                <th>{{ 'indium.crud.landing_page.section_title'|trans }}</th>
+                <th class="text-center">{{ 'indium.crud.landing_page.status'|trans }}</th>
+                <th class="text-center">{{ 'indium.crud.landing_page.actions'|trans }}</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for section in sections %}
+                <tr>
+                    <td class="text-muted">{{ section.sortOrder }}</td>
+                    <td>
+                        <span class="badge bg-dark">{{ section.sectionType }}</span>
+                    </td>
+                    <td class="fw-semibold">{{ section.title }}</td>
+                    <td class="text-center">
+                        {% if section.isEnabled %}
+                            <span class="badge bg-success">Enabled</span>
+                        {% else %}
+                            <span class="badge bg-secondary">Disabled</span>
+                        {% endif %}
+                    </td>
+                    <td class="text-center">
+                        <a href="{{ ea_url({ crudAction: 'editSection', crudControllerFqcn: 'App\\Core\\Controller\\Panel\\Setting\\LandingPageController', sectionType: section.sectionType }) }}"
+                           class="btn btn-sm btn-primary p-2 me-1" title="Edit">
+                            <i class="fa fa-edit"></i>
+                        </a>
+                        <a href="{{ ea_url({ crudAction: 'toggleSection', crudControllerFqcn: 'App\\Core\\Controller\\Panel\\Setting\\LandingPageController', sectionType: section.sectionType }) }}"
+                           class="btn btn-sm btn-{{ section.isEnabled ? 'warning' : 'success' }} p-2" title="{{ section.isEnabled ? 'Disable' : 'Enable' }}">
+                            <i class="fa fa-{{ section.isEnabled ? 'toggle-off' : 'toggle-on' }}"></i>
+                        </a>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="5" class="text-center">
+                        <em>No sections found</em>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

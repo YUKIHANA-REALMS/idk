@@ -11,6 +11,7 @@ use App\Core\Event\Landing\NavigationButtonsCollectedEvent;
 use App\Core\Event\Widget\WidgetsCollectedEvent;
 use App\Core\Service\SettingService;
 use App\Core\Service\StoreService;
+use App\Core\Service\LandingPage\LandingPageService;
 use App\Core\Service\Widget\WidgetRegistry;
 use App\Core\Trait\EventContextTrait;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -28,6 +29,7 @@ class DefaultController extends AbstractController
         private readonly StoreService $storeService,
         private readonly WidgetRegistry $widgetRegistry,
         private readonly RequestStack $requestStack,
+        private readonly LandingPageService $landingPageService,
     ) {}
 
     #[Route('/', name: 'homepage')]
@@ -79,6 +81,8 @@ class DefaultController extends AbstractController
         $navigationButtons = $this->collectNavigationButtons($user, $request);
 
         // 6. Prepare view data
+        $landingPageData = $this->landingPageService->getLandingPageData();
+
         $viewData = [
             'categories' => $categories,
             'featuredProducts' => $featuredProducts,
@@ -86,6 +90,7 @@ class DefaultController extends AbstractController
             'widgetContext' => WidgetContext::LANDING_HOMEPAGE,
             'contextData' => $contextData,
             'navigationButtons' => $navigationButtons,
+            'landingPage' => $landingPageData,
         ];
 
         // 7. Dispatch view event
@@ -192,6 +197,8 @@ class DefaultController extends AbstractController
         $navigationButtons = $this->collectNavigationButtons($user, $request);
 
         // 6. Prepare view data
+        $landingPageData = $this->landingPageService->getLandingPageData();
+
         $viewData = [
             'storeData' => $storeData,
             'selectedCategoryId' => $categoryId,
@@ -199,6 +206,7 @@ class DefaultController extends AbstractController
             'widgetContext' => WidgetContext::LANDING_STORE,
             'contextData' => $contextData,
             'navigationButtons' => $navigationButtons,
+            'landingPage' => $landingPageData,
         ];
 
         // 7. Dispatch view event

@@ -1,0 +1,76 @@
+{% extends '@EasyAdmin/layout.html.twig' %}
+
+{% block content_header_wrapper %}
+    <div class="dashboard-header rounded-3 p-4 mb-4 mt-4">
+        <div class="container-fluid">
+            <div class="d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center">
+                    <div class="bg-primary rounded-circle me-3"><i class="fas fa-shoe-prints p-3 text-white"></i></div>
+                    <div><h4 class="mb-1 fw-bold">Edit Footer</h4><p class="text-muted mb-0">Configure footer links and styling</p></div>
+                </div>
+                <a href="{{ ea_url({ crudAction: 'index', crudControllerFqcn: 'App\\Core\\Controller\\Panel\\Setting\\LandingPageController' }) }}" class="btn secondary p-3"><i class="fa fa-arrow-left"></i> Back</a>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block main %}
+<form method="post" action="{{ ea_url({ crudAction: 'updateSection', crudControllerFqcn: 'App\\Core\\Controller\\Panel\\Setting\\LandingPageController' }) }}">
+    <input type="hidden" name="sectionType" value="{{ section_type }}">
+
+    <div class="card border-0 shadow-sm rounded-3 mb-4">
+        <div class="card-header bg-white border-bottom"><h5 class="mb-0 fw-bold">Footer Styling</h5></div>
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-4"><label class="form-label fw-semibold">Background Color</label><div class="input-group"><input type="color" name="content[background_color]" class="form-control form-control-color" value="{{ content.background_color|default('#000000') }}"></div></div>
+                <div class="col-md-4"><label class="form-label fw-semibold">Text Color</label><div class="input-group"><input type="color" name="content[text_color]" class="form-control form-control-color" value="{{ content.text_color|default('#888888') }}"></div></div>
+                <div class="col-md-4"><label class="form-label fw-semibold">Copyright Text</label><input type="text" name="content[copyright_text]" class="form-control" value="{{ content.copyright_text|default('All rights reserved.') }}"></div>
+                <div class="col-md-4"><label class="form-label fw-semibold">Show Logo</label><select name="content[show_logo]" class="form-select"><option value="1" {{ content.show_logo|default(true) ? 'selected' : '' }}>Yes</option><option value="0" {{ not (content.show_logo|default(true)) ? 'selected' : '' }}>No</option></select></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-3 mb-4">
+        <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center">
+            <h5 class="mb-0 fw-bold">Footer Links</h5>
+            <button type="button" class="btn btn-sm btn-success" onclick="addFooterLink()"><i class="fa fa-plus"></i> Add Link</button>
+        </div>
+        <div class="card-body" id="footerLinksContainer">
+            {% for link in content.links|default([]) %}
+            <div class="row g-2 mb-2 footer-link-row">
+                <div class="col-md-4"><input type="text" name="links[text][]" class="form-control" value="{{ link.text|default('') }}" placeholder="Link Text"></div>
+                <div class="col-md-6"><input type="text" name="links[url][]" class="form-control" value="{{ link.url|default('') }}" placeholder="URL"></div>
+                <div class="col-md-2"><button type="button" class="btn btn-sm btn-danger w-100" onclick="this.closest('.footer-link-row').remove()"><i class="fa fa-trash"></i></button></div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-3 mb-4">
+        <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center">
+            <h5 class="mb-0 fw-bold">Social Links</h5>
+            <button type="button" class="btn btn-sm btn-success" onclick="addSocialLink()"><i class="fa fa-plus"></i> Add Social</button>
+        </div>
+        <div class="card-body" id="socialLinksContainer">
+            {% for social in content.social_links|default([]) %}
+            <div class="row g-2 mb-2 social-link-row">
+                <div class="col-md-3"><select name="social_links[platform][]" class="form-select"><option value="discord" {{ social.platform|default('') == 'discord' ? 'selected' : '' }}>Discord</option><option value="twitter" {{ social.platform|default('') == 'twitter' ? 'selected' : '' }}>Twitter</option><option value="github" {{ social.platform|default('') == 'github' ? 'selected' : '' }}>GitHub</option><option value="youtube" {{ social.platform|default('') == 'youtube' ? 'selected' : '' }}>YouTube</option><option value="email" {{ social.platform|default('') == 'email' ? 'selected' : '' }}>Email</option></select></div>
+                <div class="col-md-7"><input type="text" name="social_links[url][]" class="form-control" value="{{ social.url|default('') }}" placeholder="URL"></div>
+                <div class="col-md-2"><button type="button" class="btn btn-sm btn-danger w-100" onclick="this.closest('.social-link-row').remove()"><i class="fa fa-trash"></i></button></div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm rounded-3 mb-4">
+        <div class="card-body d-flex justify-content-between">
+            <div class="form-check form-switch"><input class="form-check-input" type="checkbox" name="isEnabled" id="isEnabled" {{ section.isEnabled ? 'checked' : '' }}><label class="form-check-label fw-semibold" for="isEnabled">Enabled</label></div>
+            <button type="submit" class="btn primary px-4"><i class="fa fa-save me-2"></i>Save</button>
+        </div>
+    </div>
+</form>
+<script>
+function addFooterLink(){const c=document.getElementById('footerLinksContainer');const r=document.createElement('div');r.className='row g-2 mb-2 footer-link-row';r.innerHTML='<div class="col-md-4"><input type="text" name="links[text][]" class="form-control" placeholder="Text"></div><div class="col-md-6"><input type="text" name="links[url][]" class="form-control" placeholder="URL"></div><div class="col-md-2"><button type="button" class="btn btn-sm btn-danger w-100" onclick="this.closest(\'.footer-link-row\').remove()"><i class="fa fa-trash"></i></button></div>';c.appendChild(r);}
+function addSocialLink(){const c=document.getElementById('socialLinksContainer');const r=document.createElement('div');r.className='row g-2 mb-2 social-link-row';r.innerHTML='<div class="col-md-3"><select name="social_links[platform][]" class="form-select"><option value="discord">Discord</option><option value="twitter">Twitter</option><option value="github">GitHub</option><option value="youtube">YouTube</option><option value="email">Email</option></select></div><div class="col-md-7"><input type="text" name="social_links[url][]" class="form-control" placeholder="URL"></div><div class="col-md-2"><button type="button" class="btn btn-sm btn-danger w-100" onclick="this.closest(\'.social-link-row\').remove()"><i class="fa fa-trash"></i></button></div>';c.appendChild(r);}
+</script>
+{% endblock %}

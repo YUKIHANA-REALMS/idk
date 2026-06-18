@@ -174,6 +174,18 @@ class MenuBuilder
             $adminItems[] = $pluginsSubmenu;
         }
 
+        // Landing Page
+        if ($this->security->isGranted(PermissionEnum::ACCESS_SETTINGS_GENERAL->value)) {
+            $adminItems[] = MenuItem::linkToUrl(
+                'Landing Page',
+                'fa fa-globe',
+                $this->adminUrlGenerator
+                    ->setController(\App\Core\Controller\Panel\Setting\LandingPageController::class)
+                    ->setAction('index')
+                    ->generateUrl()
+            );
+        }
+
         // Users
         if ($this->security->isGranted(PermissionEnum::ACCESS_USERS->value)) {
             $adminItems[] = MenuItem::linkToCrud(
