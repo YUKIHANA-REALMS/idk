@@ -6,17 +6,212 @@
 
 {% block content %}
     <div class="mt-4">
-        <!-- Header Section -->
-        <div class="row">
+        {# Welcome Header #}
+        <div class="row mb-4">
             <div class="col-12">
-                <div class="dashboard-header rounded-3 p-4">
-                    <div class="d-flex align-items-center">
-                        <div class="bg-primary rounded-circle me-3">
-                            <i class="fas fa-tachometer-alt p-3 text-white"></i>
-                        </div>
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <h4 class="mb-1 fw-bold" style="color: var(--bs-heading-color);">
+                            Hey, {{ app.user.name ?? 'User' }}!
+                        </h4>
+                        <p class="text-muted mb-0" style="color: var(--stripe-gray-500) !important;">{{ 'indium.dashboard.welcome_message'|trans }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {# Stat Cards #}
+        <div class="row g-3 mb-4">
+            <div class="col-6 col-lg-3">
+                <div class="dashboard-stat-card">
+                    <div class="d-flex align-items-center justify-content-between">
                         <div>
-                            <h4 class="mb-1 fw-bold">{{ 'indium.dashboard.title'|trans }}</h4>
-                            <p class="text-muted mb-0">{{ 'indium.dashboard.welcome_message'|trans }}</p>
+                            <div class="stat-number">{{ servers|length }}</div>
+                            <div class="stat-label">{{ 'indium.dashboard.active_servers'|trans }}</div>
+                        </div>
+                        <div class="stat-icon blue">
+                            <i class="fas fa-server"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-lg-3">
+                <div class="dashboard-stat-card">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <div class="stat-number">0</div>
+                            <div class="stat-label">{{ 'indium.dashboard.orders'|trans }}</div>
+                        </div>
+                        <div class="stat-icon green">
+                            <i class="fas fa-shopping-cart"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-lg-3">
+                <div class="dashboard-stat-card">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <div class="stat-number">0</div>
+                            <div class="stat-label">{{ 'indium.dashboard.open_tickets'|trans }}</div>
+                        </div>
+                        <div class="stat-icon orange">
+                            <i class="fas fa-ticket-alt"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-lg-3">
+                <div class="dashboard-stat-card">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <div class="stat-number">0</div>
+                            <div class="stat-label">{{ 'indium.dashboard.unpaid_invoices'|trans }}</div>
+                        </div>
+                        <div class="stat-icon purple">
+                            <i class="fas fa-file-invoice-dollar"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {# Quick Actions #}
+        <div class="row g-3 mb-4">
+            <div class="col-6 col-lg-3">
+                <a href="{{ path('panel', { routeName: 'panel_store' }) }}" class="dashboard-quick-action">
+                    <div class="action-icon blue">
+                        <i class="fas fa-plus"></i>
+                    </div>
+                    <div class="action-label">{{ 'indium.dashboard.quick_action_order_server'|trans }}</div>
+                </a>
+            </div>
+            <div class="col-6 col-lg-3">
+                <a href="{{ path('panel', { routeName: 'servers' }) }}" class="dashboard-quick-action">
+                    <div class="action-icon green">
+                        <i class="fas fa-server"></i>
+                    </div>
+                    <div class="action-label">{{ 'indium.dashboard.quick_action_my_servers'|trans }}</div>
+                </a>
+            </div>
+            <div class="col-6 col-lg-3">
+                <a href="#" class="dashboard-quick-action">
+                    <div class="action-icon orange">
+                        <i class="fas fa-headset"></i>
+                    </div>
+                    <div class="action-label">{{ 'indium.dashboard.quick_action_open_ticket'|trans }}</div>
+                </a>
+            </div>
+            <div class="col-6 col-lg-3">
+                <a href="{{ path('panel', { routeName: 'panel_store' }) }}" class="dashboard-quick-action">
+                    <div class="action-icon purple">
+                        <i class="fas fa-store"></i>
+                    </div>
+                    <div class="action-label">{{ 'indium.dashboard.quick_action_store'|trans }}</div>
+                </a>
+            </div>
+        </div>
+
+        {# Active Services Section #}
+        <div class="row g-4 mb-4">
+            <div class="col-12">
+                <div class="card border-0 shadow-sm rounded-3">
+                    <div class="card-header">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-server me-2"></i>
+                                <h5 class="mb-0 fw-semibold">{{ 'indium.dashboard.active_services'|trans }}</h5>
+                            </div>
+                            <a href="{{ path('panel', { routeName: 'servers' }) }}" class="btn btn-sm" style="background-color: var(--primary-color); color: #fff;">
+                                {{ 'indium.dashboard.view_all_servers'|trans }}
+                                <i class="fas fa-arrow-right ms-1"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="card-body p-0">
+                        {% if servers is not empty %}
+                            <div class="list-group list-group-flush">
+                                {% for server in servers %}
+                                    <div class="list-group-item border-0 py-3 placeholder-glow placeholder-wave" data-server-id="{{ server.id }}">
+                                        <div class="d-flex align-items-center justify-content-between">
+                                            <div class="d-flex align-items-center">
+                                                <div class="me-3">
+                                                    <i class="fas fa-server fs-5" style="color: var(--primary-color);"></i>
+                                                </div>
+                                                <div>
+                                                    <h6 class="mb-1 fw-bold">{{ server.name ?: server.serverProduct.name }} #{{ server.getPterodactylServerIdentifier }}</h6>
+                                                    <div class="d-flex align-items-center">
+                                                        {% if not server.isSuspended %}
+                                                            <span class="badge badge-success me-2">{{ 'indium.servers.active'|trans }}</span>
+                                                            <span class="badge placeholder col-2 me-2" data-state></span>
+                                                        {% else %}
+                                                            <span class="badge badge-warning me-2">{{ 'indium.servers.suspended'|trans }}</span>
+                                                        {% endif %}
+                                                        <small class="text-muted">
+                                                            <i class="fas fa-globe me-1"></i>
+                                                            <span class="placeholder col-4 rounded-1" data-ip></span>
+                                                        </small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div>
+                                            {% if not server.isSuspended %}
+                                                <a href="{% if not use_pterodactyl_panel_as_client_panel() %}{{ path('panel', { routeName: 'server', id: server.pterodactylServerIdentifier }) }}{% else %}{{ get_pterodactyl_panel_url('/server/' ~ server.pterodactylServerIdentifier) }}{% endif %}"
+                                                   target="{% if use_pterodactyl_panel_as_client_panel() %}_blank{% else %}_self{% endif %}"
+                                                   class="btn btn-sm" style="background-color: var(--primary-color); color: #fff;">
+                                                    <i class="fas fa-cog m-1"></i>
+                                                    <span class="d-none d-md-inline">{{ 'indium.servers.manage_server'|trans }}</span>
+                                                </a>
+                                            {% else %}
+                                                <a href="{{ path('panel', { routeName: 'cart_renew', id: server.id }) }}" 
+                                                    class="btn btn-sm" style="background-color: var(--primary-color); color: #fff;"
+                                                    title="{{ 'indium.servers.extend'|trans }}">
+                                                    <i class="fas fa-sync fa-xs m-1"></i>
+                                                    <span>{{ 'indium.servers.extend'|trans }}</span>
+                                                </a>
+                                            {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <div class="text-center py-5">
+                                <div class="mx-auto mb-4" style="width: 80px; height: 80px; display: flex; align-items: center; justify-content: center; background-color: var(--stripe-gray-100); border-radius: 50%;">
+                                    <i class="fas fa-server text-muted" style="font-size: 2rem;"></i>
+                                </div>
+                                <h6 class="fw-bold mb-2" style="color: var(--bs-heading-color);">{{ 'indium.dashboard.no_servers'|trans }}</h6>
+                                <p class="text-muted mb-4">{{ 'indium.dashboard.no_servers_description'|trans }}</p>
+                                <a href="{{ path('panel', { routeName: 'panel_store' }) }}" class="btn rounded-pill" style="background-color: var(--primary-color); color: #fff;">
+                                    <i class="fas fa-plus me-2"></i>
+                                    {{ 'indium.dashboard.order_first_server'|trans }}
+                                </a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {# Recent Orders Section #}
+        <div class="row g-4 mb-4">
+            <div class="col-12">
+                <div class="card border-0 shadow-sm rounded-3">
+                    <div class="card-header">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-shopping-cart me-2"></i>
+                                <h5 class="mb-0 fw-semibold">{{ 'indium.dashboard.recent_orders'|trans }}</h5>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="text-center py-5">
+                            <div class="mx-auto mb-4" style="width: 80px; height: 80px; display: flex; align-items: center; justify-content: center; background-color: var(--stripe-gray-100); border-radius: 50%;">
+                                <i class="fas fa-shopping-cart text-muted" style="font-size: 2rem;"></i>
+                            </div>
+                            <h6 class="fw-bold mb-2" style="color: var(--bs-heading-color);">{{ 'indium.dashboard.no_orders'|trans }}</h6>
+                            <p class="text-muted mb-0">{{ 'indium.dashboard.no_orders_description'|trans }}</p>
                         </div>
                     </div>
                 </div>
@@ -88,4 +283,63 @@
             'cssClass': 'mt-2'
         } %}
     </div>
+{% endblock %}
+
+{% block body_javascript %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const servers = document.querySelectorAll('[data-server-id]');
+
+            servers.forEach(server => {
+                const serverId = server.getAttribute('data-server-id'),
+                    endpointUrl = '{{ path('panel') }}/api/server/' + serverId + '/details'
+
+                fetch(endpointUrl)
+                    .then(response => response.json())
+                    .then(data => {
+                        updateServerDashboardElements(server, data);
+                        document.querySelectorAll('.placeholder-glow').forEach(element => element.classList.remove('placeholder-glow'));
+                        document.querySelectorAll('.placeholder-wave').forEach(element => element.classList.remove('placeholder-wave'));
+                    })
+                    .catch(error => console.error('Error fetching server details:', error));
+            })
+
+            function updateServerDashboardElements(server, data, prefix = '') {
+                for (const [key, value] of Object.entries(data)) {
+                    let dataKey = prefix ? `${prefix}-${key}` : key;
+                    dataKey = dataKey.replaceAll(' ', '-').replaceAll('.', '-').toLowerCase();
+                    if (typeof value === 'object' && value !== null) {
+                        updateServerDashboardElements(server, value, dataKey);
+                    } else {
+                        const element = server.querySelector(`[data-${dataKey}]`);
+                        if (element) {
+                            if (dataKey === 'state') {
+                                updateServerStateBadge(element, value);
+                            } else if (element.hasAttribute('data-unit')) {
+                                element.textContent = `${value} ${element.getAttribute('data-unit')}`;
+                            } else {
+                                element.textContent = value;
+                            }
+                            element.classList.remove('placeholder');
+                        }
+                    }
+                }
+            }
+
+            function updateServerStateBadge(element, state) {
+                const stateConfig = {
+                    'running': { class: 'badge-success', text: '{{ 'indium.servers.state.running'|trans }}' },
+                    'stopped': { class: 'badge-secondary', text: '{{ 'indium.servers.state.stopped'|trans }}' },
+                    'starting': { class: 'badge-warning', text: '{{ 'indium.servers.state.starting'|trans }}' },
+                    'stopping': { class: 'badge-warning', text: '{{ 'indium.servers.state.stopping'|trans }}' },
+                    'offline': { class: 'badge-danger', text: '{{ 'indium.servers.state.offline'|trans }}' }
+                };
+
+                const config = stateConfig[state] || { class: 'badge-secondary', text: state };
+                
+                element.className = `badge ${config.class} me-2`;
+                element.textContent = config.text;
+            }
+        });
+    </script>
 {% endblock %}

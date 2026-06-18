@@ -6,17 +6,15 @@
         </div>
     </div>
     <div class="card-body p-4">
-        <!-- Balance Display -->
         <div class="mb-4">
             <div class="mb-2">
                 <small class="text-muted text-uppercase" style="font-size: 0.75rem; letter-spacing: 0.05em;">{{ 'indium.dashboard.account_balance_description'|trans }}</small>
             </div>
-            <h2 class="fw-bold mb-0" style="color: var(--stripe-gray-900); font-size: 2rem;">{{ app.user.balance|format_price }} {{ get_currency() }}</h2>
+            <h2 class="fw-bold mb-0" style="color: var(--bs-heading-color); font-size: 2rem;">{{ app.user.balance|format_price }} {{ get_currency() }}</h2>
         </div>
 
-        <!-- Action Button -->
         <div class="d-grid">
-            <a href="{{ path('panel', { routeName: 'recharge_balance' }) }}" class="btn primary p-3">
+            <a href="{{ path('panel', { routeName: 'recharge_balance' }) }}" class="btn p-3" style="background-color: var(--primary-color); color: #fff;">
                 <i class="fas fa-plus me-2"></i>
                 {{ 'indium.dashboard.account_recharge'|trans }}
             </a>

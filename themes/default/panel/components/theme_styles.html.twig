@@ -27,47 +27,52 @@
     }
 
     {% if defaultThemeColors.theme_default_dark_mode_color %}
-    /* Sidebar and content styles for dark mode */
+    /* Sidebar and content styles for dark mode - AMOLED Black */
     .ea-dark-scheme .sidebar,
     .ea-dark-scheme .main-header {
-        background: {{ defaultThemeColors.theme_default_dark_mode_color }} !important;
+        background: #000000 !important;
     }
     .ea-dark-scheme .content-top,
-    .ea-dark-scheme .card,
-    .ea-dark-scheme .global-footer,
+    .ea-dark-scheme .global-footer {
+        background: #000000 !important;
+    }
+    .ea-dark-scheme .card {
+        background: #0a0a0a !important;
+    }
+    .ea-dark-scheme .card-header {
+        background: #0a0a0a !important;
+    }
     .ea-dark-scheme .table thead th {
-        background: color-mix(in srgb, {{ defaultThemeColors.theme_default_dark_mode_color }} 98%, white 2%) !important;
+        background: #0a0a0a !important;
     }
     .ea-dark-scheme table tbody tr,
     .ea-dark-scheme .table tbody tr,
     .ea-dark-scheme table.table tbody tr,
     .ea-dark-scheme table tbody tr td,
     .ea-dark-scheme .table tbody tr td {
-        background-color: color-mix(in srgb, {{ defaultThemeColors.theme_default_dark_mode_color }} 90%, white 2%) !important;
+        background-color: #0a0a0a !important;
     }
     .ea-dark-scheme table,
     .ea-dark-scheme .table {
-        --bs-table-bg: color-mix(in srgb, {{ defaultThemeColors.theme_default_dark_mode_color }} 90%, white 2%) !important;
+        --bs-table-bg: #0a0a0a !important;
         --bs-table-color: inherit !important;
     }
     .ea-dark-scheme .main-content {
-        background-color: color-mix(in srgb, {{ defaultThemeColors.theme_default_dark_mode_color }} 90%, black 10%) !important;
+        background-color: #000000 !important;
     }
     .ea-dark-scheme #main-menu .menu .menu-item:hover {
-        background: color-mix(in srgb, {{ defaultThemeColors.theme_default_dark_mode_color }} 85%, white 5%) !important;
+        background: #111111 !important;
     }
     .ea-dark-scheme .bg-light {
-        background-color: color-mix(in srgb, {{ defaultThemeColors.theme_default_dark_mode_color }} 90%, white 5%) !important;
+        background-color: #111111 !important;
     }
     .ea-dark-scheme .store-product-placeholder,
     .ea-dark-scheme .store-category-placeholder {
-        background: linear-gradient(135deg,
-            color-mix(in srgb, {{ defaultThemeColors.theme_default_dark_mode_color }} 85%, white 5%) 0%,
-            color-mix(in srgb, {{ defaultThemeColors.theme_default_dark_mode_color }} 90%, white 3%) 100%) !important;
+        background: linear-gradient(135deg, #0a0a0a 0%, #111111 100%) !important;
     }
     .ea-dark-scheme .store-product-icon,
     .ea-dark-scheme .store-category-icon {
-        color: color-mix(in srgb, {{ defaultThemeColors.theme_default_dark_mode_color }} 50%, white 50%) !important;
+        color: #555555 !important;
     }
     {% endif %}
 

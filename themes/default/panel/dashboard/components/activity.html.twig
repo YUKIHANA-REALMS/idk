@@ -12,15 +12,15 @@
                     <thead>
                         <tr>
                             <th class="fw-semibold">
-                                <i class="fas fa-bolt me-2 text-primary"></i>
+                                <i class="fas fa-bolt me-2" style="color: var(--primary-color);"></i>
                                 {{ 'indium.dashboard.action'|trans }}
                             </th>
                             <th class="fw-semibold">
-                                <i class="fas fa-globe me-2 text-info"></i>
+                                <i class="fas fa-globe me-2" style="color: var(--primary-color);"></i>
                                 {{ 'indium.dashboard.ip_address'|trans }}
                             </th>
                             <th class="fw-semibold">
-                                <i class="fas fa-calendar me-2 text-warning"></i>
+                                <i class="fas fa-calendar me-2" style="color: var(--primary-color);"></i>
                                 {{ 'indium.dashboard.date'|trans }}
                             </th>
                         </tr>
@@ -31,7 +31,7 @@
                                 <td>
                                     <div class="d-flex align-items-center">
                                         <div class="me-2">
-                                            <i class="fas fa-user-check p-2 text-primary" style="font-size: 0.75rem;"></i>
+                                            <i class="fas fa-user-check p-2" style="font-size: 0.75rem; color: var(--primary-color);"></i>
                                         </div>
                                         {{ ('indium.actions.' ~ log.actionId)|trans }}
                                     </div>
@@ -49,10 +49,10 @@
             </div>
         {% else %}
             <div class="text-center py-4">
-                <div class="rounded-circle mx-auto mb-3" style="width: 60px; height: 60px; display: flex; align-items: center; justify-content: center;">
+                <div class="mx-auto mb-3" style="width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; background-color: var(--stripe-gray-100); border-radius: 50%;">
                     <i class="fas fa-history text-muted" style="font-size: 1.5rem;"></i>
                 </div>
-                <h6 class="fw-bold text-dark mb-1">{{ 'indium.dashboard.no_activity'|trans }}</h6>
+                <h6 class="fw-bold mb-1" style="color: var(--bs-heading-color);">{{ 'indium.dashboard.no_activity'|trans }}</h6>
                 <p class="text-muted mb-0 small">{{ 'indium.dashboard.no_activity_description'|trans }}</p>
             </div>
         {% endif %}
