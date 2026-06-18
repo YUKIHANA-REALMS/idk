@@ -90,11 +90,9 @@
                                             </button>
                                         </form>
                                     {% else %}
-                                        <form method="post" action="{{ path('admin') }}" style="display:inline">
+                                        <form method="post" action="{{ ea_url({ crudAction: 'setDefaultTheme', crudControllerFqcn: 'App\\Core\\Controller\\Panel\\Setting\\ThemeCrudController' }) }}" style="display:inline">
                                             <input type="hidden" name="themeName" value="{{ theme.name }}">
                                             <input type="hidden" name="context" value="{{ context }}">
-                                            <input type="hidden" name="crudAction" value="setDefaultTheme">
-                                            <input type="hidden" name="crudControllerFqcn" value="App\Core\Controller\Panel\Setting\ThemeCrudController">
                                             <button type="submit" class="btn btn-sm btn-success p-1 mb-1" title="Activate in {{ context }}">
                                                 <i class="fa fa-toggle-on"></i> {{ context|capitalize }}
                                             </button>
