@@ -62,7 +62,7 @@ class LandingPageController extends AbstractPanelController
         $sections = $this->landingPageService->getAllSections();
 
         return $this->renderWithEvent(
-            ViewNameEnum::SETTING_INDEX,
+            ViewNameEnum::SETTING_LANDING_PAGE,
             'panel/crud/landing_page/index.html.twig',
             [
                 'sections' => $sections,
@@ -102,7 +102,7 @@ class LandingPageController extends AbstractPanelController
         $template = $templateMap[$sectionType] ?? 'panel/crud/landing_page/edit_generic.html.twig';
 
         return $this->renderWithEvent(
-            ViewNameEnum::SETTING_INDEX,
+            ViewNameEnum::SETTING_LANDING_PAGE,
             $template,
             [
                 'section' => $section,

@@ -29,4 +29,5 @@ enum ViewNameEnum: string
     case THEME_UPLOAD = 'theme_upload';
     case LANDING_HOMEPAGE = 'landing_homepage';
     case LANDING_STORE = 'landing_store';
+    case SETTING_LANDING_PAGE = 'setting_landing_page';
 }
