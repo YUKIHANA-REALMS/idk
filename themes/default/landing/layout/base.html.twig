@@ -28,11 +28,11 @@
         :root {
             --lp-navbar-bg: {{ navbar.background_color|default('#000000') }};
             --lp-navbar-text: {{ navbar.text_color|default('#ffffff') }};
-            --lp-navbar-btn: {{ navbar.button_color|default('#4287f5') }};
+            --lp-navbar-btn: {{ navbar.button_color|default('#3b82f6') }};
         }
         .navbar.lp-custom { background: var(--lp-navbar-bg) !important; }
         .navbar.lp-custom .nav-link { color: var(--lp-navbar-text) !important; }
-        .navbar.lp-custom .btn-primary { background: var(--lp-navbar-btn); border-color: var(--lp-navbar-btn); }
+        .navbar.lp-custom .btn-signin { background: linear-gradient(135deg, var(--lp-navbar-btn) 0%, #8b5cf6 100%); }
         footer.lp-custom { background: {{ footer.background_color|default('#000000') }}; color: {{ footer.text_color|default('#888888') }}; }
     </style>
 
@@ -46,16 +46,23 @@
             <div class="container">
                 <a class="navbar-brand" href="{{ path('homepage') }}">
                     {% if general.logo_url|default('') %}
-                        <img src="{{ general.logo_url }}" alt="{{ general.site_title|default(get_title()) }}" height="40">
+                        <img src="{{ general.logo_url }}" alt="{{ general.site_title|default(get_title()) }}" height="36">
                     {% else %}
-                        <img src="{{ get_logo() }}" alt="{{ general.site_title|default(get_title()) }}" height="40" class="d-inline-block align-text-top me-2">
+                        <span class="brand-icon">
+                            <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <polygon points="4,4 14,14 4,24" fill="white"/>
+                                <circle cx="20" cy="14" r="7" fill="none" stroke="white" stroke-width="2.5"/>
+                                <circle cx="20" cy="14" r="3" fill="white"/>
+                            </svg>
+                        </span>
+                        <span>{{ general.site_title|default(get_title()) }}</span>
                     {% endif %}
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="collapse navbar-collapse" id="navbarNav">
-                    <ul class="navbar-nav ms-auto align-items-center">
+                <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                    <ul class="navbar-nav align-items-center">
                         {% if navbar.links is defined %}
                             {% for link in navbar.links %}
                                 {% if link.is_active|default(true) %}
@@ -75,16 +82,15 @@
                         {% else %}
                             {% if app.user %}
                                 <li class="nav-item">
-                                    <a class="btn btn-primary btn-sm ms-3" href="{{ path('panel') }}">
-                                        <i class="fas fa-tachometer-alt me-2"></i>{{ 'indium.landing.nav.dashboard'|trans }}
+                                    <a class="btn btn-signin ms-3" href="{{ path('panel') }}">
+                                        {{ 'indium.landing.nav.dashboard'|trans }}
                                     </a>
                                 </li>
                             {% else %}
                                 <li class="nav-item">
-                                    <a class="nav-link" href="{{ path('app_login') }}">{{ 'indium.landing.nav.login'|trans }}</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="btn btn-primary btn-sm ms-3" href="{{ path('app_register') }}">{{ 'indium.landing.nav.get_started'|trans }}</a>
+                                    <a class="btn btn-signin ms-3" href="{{ path('app_login') }}">
+                                        {{ 'indium.landing.nav.login'|trans }}
+                                    </a>
                                 </li>
                             {% endif %}
                         {% endif %}

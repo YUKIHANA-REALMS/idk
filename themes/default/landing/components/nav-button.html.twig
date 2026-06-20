@@ -2,9 +2,9 @@
 <li class="nav-item">
     {% set btnClass = 'nav-link' %}
     {% if button.type == 'primary' %}
-        {% set btnClass = 'btn btn-primary btn-sm ms-3' %}
+        {% set btnClass = 'btn btn-signin ms-3' %}
     {% elseif button.type == 'secondary' %}
-        {% set btnClass = 'btn btn-secondary btn-sm ms-3' %}
+        {% set btnClass = 'btn btn-outline-light btn-sm ms-3' %}
     {% elseif button.type == 'outline' %}
         {% set btnClass = 'btn btn-outline-light btn-sm ms-3' %}
     {% endif %}

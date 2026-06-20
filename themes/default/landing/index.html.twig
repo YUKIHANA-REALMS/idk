@@ -6,66 +6,125 @@
 {% set cta = landingPage.cta|default({}) %}
 
 {% block body %}
-    {# Hero section #}
+    {# Hero section - Two Column Layout #}
     <section class="lp-hero" style="
         background: {% if hero.background_type|default('color') == 'color' %}{{ hero.background_color|default('#000000') }}{% elseif hero.background_type == 'image' %}url('{{ hero.background_image }}') center/cover no-repeat{% elseif hero.background_type == 'video' %}#000000{% endif %};
         color: {{ hero.text_color|default('#ffffff') }};
-        min-height: 100vh;
-        display: flex;
-        align-items: center;
-        padding-top: 80px;
     ">
         {% if hero.background_type|default('') == 'video' and hero.background_video|default('') %}
-        <video autoplay muted loop playsinline class="lp-hero-video" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;z-index:0;">
+        <video autoplay muted loop playsinline class="lp-hero-video">
             <source src="{{ hero.background_video }}" type="video/mp4">
         </video>
-        <div style="position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.6);z-index:1;"></div>
+        <div class="lp-hero-overlay" style="background:rgba(0,0,0,0.5);"></div>
+        {% endif %}
+
+        {# Wave Animation #}
+        {% if hero.show_waves|default(true) %}
+        <div class="lp-wave-container">
+            <div class="lp-wave"></div>
+            <div class="lp-wave"></div>
+            <div class="lp-wave"></div>
+            <div class="lp-wave"></div>
+            <div class="lp-wave"></div>
+            <div class="lp-wave"></div>
+            <div class="lp-wave"></div>
+            <div class="lp-wave"></div>
+        </div>
         {% endif %}
 
         <div class="container position-relative" style="z-index:2;">
-            <div class="row justify-content-center text-center">
-                <div class="col-lg-8">
-                    <h1 class="lp-hero-title" style="font-size: clamp(3rem, 8vw, 6rem); font-weight: 900; letter-spacing: -0.03em; line-height: 1.1; margin-bottom: 1.5rem;">
+            <div class="lp-hero-content">
+                {# Left Column - Main Content #}
+                <div class="lp-hero-left">
+                    <h1 class="lp-hero-title">
                         {{ hero.title|default(get_title()) }}
                     </h1>
-                    <p class="lp-hero-subtitle" style="font-size: 1.25rem; opacity: 0.8; max-width: 600px; margin: 0 auto 2.5rem; line-height: 1.6;">
-                        {{ hero.subtitle|default('') }}
-                    </p>
-                    <div class="d-flex gap-3 justify-content-center flex-wrap">
+
+                    {# Search Bar #}
+                    {% if hero.show_search|default(true) %}
+                    <div class="lp-search-bar">
+                        <input type="text" placeholder="{{ hero.search_placeholder|default('Search...') }}" id="lpSearchInput">
+                        <div class="search-icon">
+                            <i class="fas fa-search"></i>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    {# Buttons #}
+                    <div class="lp-hero-buttons">
                         {% for btn in hero.buttons|default([]) %}
                             {% if btn.style|default('filled') == 'filled' %}
-                                <a href="{{ btn.url|default('#') }}" class="btn btn-lg px-5 py-3 fw-semibold" style="background: {{ btn.color|default('#4287f5') }}; color: {{ btn.text_color|default('#ffffff') }}; border: 2px solid {{ btn.color|default('#4287f5') }}; border-radius: 12px; font-size: 1.1rem;">
+                                <a href="{{ btn.url|default('#') }}" class="btn btn-free-trial" style="background: {{ btn.color|default('#3b82f6') }}; box-shadow: 0 4px 20px {{ btn.color|default('#3b82f6') }}40;">
+                                    {{ btn.text }}
+                                </a>
+                            {% elseif btn.style|default('') == 'outlined' %}
+                                <a href="{{ btn.url|default('#') }}" class="btn btn-see-more">
                                     {{ btn.text }}
                                 </a>
                             {% else %}
-                                <a href="{{ btn.url|default('#') }}" class="btn btn-lg px-5 py-3 fw-semibold" style="background: transparent; color: {{ btn.text_color|default('#ffffff') }}; border: 2px solid {{ btn.text_color|default('#ffffff') }}; border-radius: 12px; font-size: 1.1rem;">
+                                <a href="{{ btn.url|default('#') }}" class="btn btn-free-trial">
                                     {{ btn.text }}
                                 </a>
                             {% endif %}
                         {% endfor %}
                         {% if hero.buttons is not defined or hero.buttons|length == 0 %}
                             {% if app.user %}
-                                <a href="{{ path('panel') }}" class="btn btn-lg px-5 py-3 fw-semibold" style="background: #4287f5; color: #fff; border-radius: 12px;">
+                                <a href="{{ path('panel') }}" class="btn btn-free-trial">
                                     <i class="fas fa-tachometer-alt me-2"></i>{{ 'indium.landing.nav.dashboard'|trans }}
                                 </a>
                             {% else %}
-                                <a href="{{ path('app_register') }}" class="btn btn-lg px-5 py-3 fw-semibold" style="background: #4287f5; color: #fff; border-radius: 12px;">
-                                    {{ 'indium.landing.nav.get_started'|trans }}
+                                <a href="{{ path('app_register') }}" class="btn btn-free-trial">
+                                    {{ 'indium.landing.hero.get_started'|trans|default('FREE TRIAL') }}
                                 </a>
-                                <a href="{{ path('app_login') }}" class="btn btn-lg px-5 py-3 fw-semibold" style="background: transparent; color: #fff; border: 2px solid #fff; border-radius: 12px;">
-                                    {{ 'indium.landing.nav.login'|trans }}
+                                <a href="{{ path('app_login') }}" class="btn btn-see-more">
+                                    {{ 'indium.landing.hero.see_more'|trans|default('see more') }}
                                 </a>
                             {% endif %}
                         {% endif %}
                     </div>
                 </div>
+
+                {# Right Column - Side Content #}
+                <div class="lp-hero-right">
+                    {# Side Logo #}
+                    {% if hero.side_logo_enabled|default(true) %}
+                    <div class="lp-side-logo">
+                        <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <polygon points="6,6 20,20 6,34" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="2.5"/>
+                            <circle cx="28" cy="20" r="8" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="2.5"/>
+                            <circle cx="28" cy="20" r="3.5" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="2"/>
+                        </svg>
+                    </div>
+                    {% endif %}
+
+                    {# Side Title #}
+                    {% if hero.side_title|default('') %}
+                    <h2 class="lp-side-title">{{ hero.side_title }}</h2>
+                    {% else %}
+                    <h2 class="lp-side-title">Landing page.</h2>
+                    {% endif %}
+
+                    {# Side Description #}
+                    {% if hero.side_description|default('') %}
+                    <p class="lp-side-description">{{ hero.side_description }}</p>
+                    {% else %}
+                    <p class="lp-side-description">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed diam nonummy nibh euismod tincidunt ut laoreet dolore.</p>
+                    {% endif %}
+                </div>
             </div>
         </div>
+
+        {# Scroll Indicator #}
+        {% if hero.show_scroll_indicator|default(true) %}
+        <div class="lp-scroll-indicator">
+            <div class="lp-scroll-mouse"></div>
+        </div>
+        {% endif %}
     </section>
 
     {# Features section #}
     {% if features.items is defined and features.items|length > 0 %}
-    <section class="py-5" style="background: {{ features.background_color|default('#0a0a0a') }}; color: {{ features.text_color|default('#ffffff') }};">
+    <section class="lp-features" style="color: {{ features.text_color|default('#ffffff') }};">
         <div class="container">
             {% if features.title|default('') %}
             <div class="text-center mb-5">
@@ -78,12 +137,12 @@
             <div class="row g-4">
                 {% for item in features.items %}
                 <div class="col-md-4">
-                    <div class="lp-feature-card p-4 rounded-4 h-100" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); transition: transform 0.3s, border-color 0.3s;" onmouseover="this.style.transform='translateY(-4px)';this.style.borderColor='{{ item.color|default('#4287f5') }}'" onmouseout="this.style.transform='';this.style.borderColor='rgba(255,255,255,0.08)'">
+                    <div class="lp-feature-card p-4 rounded-4 h-100" onmouseover="this.style.borderColor='{{ item.color|default('#3b82f6') }}'" onmouseout="this.style.borderColor='rgba(255,255,255,0.06)'">
                         {% if item.image|default('') %}
                             <img src="{{ item.image }}" alt="{{ item.title }}" class="mb-3" style="width:48px;height:48px;object-fit:contain;">
                         {% else %}
-                            <div class="mb-3" style="width:48px;height:48px;border-radius:12px;background:{{ item.color|default('#4287f5') }}20;display:flex;align-items:center;justify-content:center;">
-                                <i class="fas {{ item.icon|default('fa-star') }}" style="font-size:20px;color:{{ item.color|default('#4287f5') }}"></i>
+                            <div class="mb-3" style="width:48px;height:48px;border-radius:12px;background:{{ item.color|default('#3b82f6') }}20;display:flex;align-items:center;justify-content:center;">
+                                <i class="fas {{ item.icon|default('fa-star') }}" style="font-size:20px;color:{{ item.color|default('#3b82f6') }}"></i>
                             </div>
                         {% endif %}
                         <h5 class="fw-bold">{{ item.title }}</h5>
@@ -98,7 +157,7 @@
 
     {# Featured products #}
     {% if products.title is defined and products.title %}
-    <section class="py-5" style="background: {{ products.background_color|default('#000000') }}; color: {{ products.text_color|default('#ffffff') }};">
+    <section class="lp-products" style="color: {{ products.text_color|default('#ffffff') }};">
         <div class="container">
             <div class="text-center mb-5">
                 <h2 class="display-6 fw-bold">{{ products.title }}</h2>
@@ -111,24 +170,24 @@
                 cardStyle: products.card_style|default('rounded'),
                 cardRadius: products.card_border_radius|default('16px'),
                 cardShadow: products.card_shadow|default(true),
-                cardShadowColor: products.card_shadow_color|default('rgba(66,135,245,0.15)'),
+                cardShadowColor: products.card_shadow_color|default('rgba(59,130,246,0.15)'),
                 cardShadowBlur: products.card_shadow_blur|default('20px'),
                 cardBg: products.card_background|default('#0a0a0a'),
-                cardBorder: products.card_border_color|default('#222222'),
+                cardBorder: products.card_border_color|default('#1e1e1e'),
                 cardHover: products.card_hover|default(true),
                 cardHoverScale: products.card_hover_scale|default('1.02'),
                 btnText: products.button_text|default('Order Now'),
-                btnColor: products.button_color|default('#4287f5'),
+                btnColor: products.button_color|default('#3b82f6'),
                 btnTextColor: products.button_text_color|default('#ffffff'),
             }) }}
         </div>
     </section>
     {% else %}
-    <section class="py-5" style="background: #000000; color: #ffffff;">
+    <section class="lp-products" style="color: #ffffff;">
         <div class="container">
             <div class="text-center mb-5">
                 <h2 class="display-6 fw-bold">{{ 'indium.landing.products.title'|trans }}</h2>
-                <div class="mx-auto mt-3 rounded-pill" style="height: 4px; width: 60px; background: #4287f5;"></div>
+                <div class="mx-auto mt-3 rounded-pill" style="height: 4px; width: 60px; background: #3b82f6;"></div>
             </div>
             {{ include('components/featured-products.html.twig', { products: featuredProducts }) }}
         </div>
@@ -137,7 +196,7 @@
 
     {# CTA section #}
     {% if cta.title is defined and cta.title %}
-    <section class="py-5" style="background: {{ cta.background_color|default('#0a0a0a') }}; color: {{ cta.text_color|default('#ffffff') }};">
+    <section class="cta-section" style="color: {{ cta.text_color|default('#ffffff') }};">
         <div class="container text-center">
             <h2 class="display-6 fw-bold mb-3">{{ cta.title }}</h2>
             {% if cta.subtitle|default('') %}
@@ -146,11 +205,11 @@
             <div class="d-flex gap-3 justify-content-center flex-wrap">
                 {% for btn in cta.buttons|default([]) %}
                     {% if btn.style|default('filled') == 'filled' %}
-                        <a href="{{ btn.url|default('#') }}" class="btn btn-lg px-5 py-3 fw-semibold" style="background: {{ btn.color|default('#4287f5') }}; color: {{ btn.text_color|default('#ffffff') }}; border: 2px solid {{ btn.color|default('#4287f5') }}; border-radius: 12px;">
+                        <a href="{{ btn.url|default('#') }}" class="btn btn-lg px-5 py-3 fw-semibold" style="background: {{ btn.color|default('#3b82f6') }}; color: {{ btn.text_color|default('#ffffff') }}; border: 2px solid {{ btn.color|default('#3b82f6') }}; border-radius: 25px;">
                             {{ btn.text }}
                         </a>
                     {% else %}
-                        <a href="{{ btn.url|default('#') }}" class="btn btn-lg px-5 py-3 fw-semibold" style="background: transparent; color: {{ btn.text_color|default('#ffffff') }}; border: 2px solid {{ btn.text_color|default('#ffffff') }}; border-radius: 12px;">
+                        <a href="{{ btn.url|default('#') }}" class="btn btn-lg px-5 py-3 fw-semibold" style="background: transparent; color: {{ btn.text_color|default('#ffffff') }}; border: 2px solid rgba(255,255,255,0.2); border-radius: 25px;">
                             {{ btn.text }}
                         </a>
                     {% endif %}
@@ -161,4 +220,20 @@
     {% else %}
         {{ include('components/cta-section.html.twig') }}
     {% endif %}
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchInput = document.getElementById('lpSearchInput');
+        if (searchInput) {
+            searchInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    const query = this.value.trim();
+                    if (query) {
+                        window.location.href = '{{ path("landing_store") }}?search=' + encodeURIComponent(query);
+                    }
+                }
+            });
+        }
+    });
+    </script>
 {% endblock %}
