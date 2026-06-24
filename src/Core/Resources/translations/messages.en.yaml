@@ -1754,6 +1754,7 @@ indium:
     messages:
       invalid_step: 'Invalid step.'
       pterodactyl_api_error: 'Could not connect to the Pterodactyl API. Check the API key and panel URL.'
+      pterodactyl_api_auth_error: 'Authentication failed. The API key is invalid or does not have the required permissions.'
       smtp_error: 'Could not connect to the SMTP server. Check the SMTP settings.'
       missing_fields: 'Please fill in all required fields.'
       pterodactyl_checking_api_connection: 'Checking the connection to the Pterodactyl API...'

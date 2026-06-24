@@ -12,7 +12,7 @@ class Credentials
 
     public function getUrl(): string
     {
-        return $this->url;
+        return rtrim($this->url, '/');
     }
 
     public function getApiKey(): string

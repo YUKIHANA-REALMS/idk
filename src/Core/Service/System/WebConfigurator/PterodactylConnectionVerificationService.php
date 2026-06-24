@@ -6,6 +6,8 @@ use App\Core\Adapter\Pterodactyl\Application\PterodactylAdapter;
 use App\Core\DTO\Action\Result\ConfiguratorVerificationResult;
 use App\Core\DTO\Pterodactyl\Credentials;
 use App\Core\Enum\SettingEnum;
+use App\Core\Exception\Pterodactyl\PterodactylAuthenticationException;
+use App\Core\Exception\Pterodactyl\PterodactylConnectionException;
 use App\Core\Service\SettingService;
 use Exception;
 use Psr\Cache\InvalidArgumentException;
@@ -62,10 +64,20 @@ readonly class PterodactylConnectionVerificationService
                 true,
                 $this->translator->trans('indium.first_configuration.messages.pterodactyl_api_connection_success'),
             );
-        } catch (Exception) {
+        } catch (PterodactylAuthenticationException) {
             return new ConfiguratorVerificationResult(
                 false,
-                $this->translator->trans('indium.first_configuration.messages.pterodactyl_api_error'),
+                $this->translator->trans('indium.first_configuration.messages.pterodactyl_api_auth_error'),
+            );
+        } catch (PterodactylConnectionException $e) {
+            return new ConfiguratorVerificationResult(
+                false,
+                $this->translator->trans('indium.first_configuration.messages.pterodactyl_api_error') . ' Details: ' . $e->getMessage(),
+            );
+        } catch (Exception $e) {
+            return new ConfiguratorVerificationResult(
+                false,
+                $this->translator->trans('indium.first_configuration.messages.pterodactyl_api_error') . ' Details: ' . $e->getMessage(),
             );
         }
     }
