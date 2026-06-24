@@ -39,7 +39,7 @@ final class Version20250217102648 extends AbstractMigration
 
     public function down(Schema $schema): void
     {
-        $this->addSql('UPDATE setting SET context = \'general_settings\' WHERE name IN (\'pterodactyl_url\', \'pterodactyl_api_key\', \'ptero_use_as_client_panel\', \'pterodactyl_sso_enabled\', \'pterodactyl_sso_secret\')');
+        $this->addSql('UPDATE setting SET context = \'general_settings\' WHERE name IN (\'pterodactyl_url\', \'pterodactyl_api_key\', \'pterodactyl_use_as_client_panel\', \'pterodactyl_sso_enabled\', \'pterodactyl_sso_secret\')');
         $this->addSql('ALTER TABLE setting DROP hierarchy');
     }
 }

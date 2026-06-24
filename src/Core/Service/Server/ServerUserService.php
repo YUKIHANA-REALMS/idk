@@ -87,14 +87,14 @@ readonly class ServerUserService
                 ->getApplicationApi()
                 ->users()
                 ->getAllUsers(['filter[email]' => $email]);
-            $existingPterocaUser = $this->userRepository->findOneBy(['email' => $email]);
+            $existingUser = $this->userRepository->findOneBy(['email' => $email]);
 
-            if (count($existingPterodactylUsers->toArray()) === 0 || !$existingPterocaUser) {
+            if (count($existingPterodactylUsers->toArray()) === 0 || !$existingUser) {
                 throw new Exception($this->translator->trans('indium.api.server_user.user_not_exist', ['{{ email }}' => $email]));
             }
 
             $verificationSetting = $this->settingService->getSetting(SettingEnum::REQUIRE_EMAIL_VERIFICATION->value);
-            if ($verificationSetting === EmailVerificationValueEnum::REQUIRED->value && !$existingPterocaUser->isVerified()) {
+            if ($verificationSetting === EmailVerificationValueEnum::REQUIRED->value && !$existingUser->isVerified()) {
                 throw new Exception($this->translator->trans('indium.api.server_user.user_not_verified', ['email' => $email]));
             }
 
@@ -108,7 +108,7 @@ readonly class ServerUserService
             $result = $pterodactylClientApi->users()
                 ->createUser($server->getPterodactylServerIdentifier(), $email, $permissions);
 
-            $this->syncServerSubuser($server, $existingPterocaUser, $permissions);
+            $this->syncServerSubuser($server, $existingUser, $permissions);
 
             $this->serverLogService->logServerAction(
                 $user,
@@ -176,9 +176,9 @@ readonly class ServerUserService
         $request = $this->requestStack->getCurrentRequest();
         $context = $request ? $this->eventContextService->buildMinimalContext($request) : [];
 
-        $existingPterocaUser = $this->userRepository->findOneBy(['email' => $email]);
+        $existingUser = $this->userRepository->findOneBy(['email' => $email]);
 
-        if (!$existingPterocaUser) {
+        if (!$existingUser) {
             throw new Exception($this->translator->trans('indium.api.server_user.user_not_exist', ['{{ email }}' => $email]));
         }
 
@@ -209,7 +209,7 @@ readonly class ServerUserService
             ->users()
             ->updateUserPermissions($server->getPterodactylServerIdentifier(), $subuserUuid, $permissions);
 
-        $this->syncServerSubuser($server, $existingPterocaUser, $permissions);
+        $this->syncServerSubuser($server, $existingUser, $permissions);
 
         $this->serverLogService->logServerAction(
             $user,
@@ -250,9 +250,9 @@ readonly class ServerUserService
         $request = $this->requestStack->getCurrentRequest();
         $context = $request ? $this->eventContextService->buildMinimalContext($request) : [];
 
-        $existingPterocaUser = $this->userRepository->findOneBy(['email' => $email]);
+        $existingUser = $this->userRepository->findOneBy(['email' => $email]);
 
-        if (!$existingPterocaUser) {
+        if (!$existingUser) {
             throw new Exception($this->translator->trans('indium.api.server_user.user_not_exist', ['{{ email }}' => $email]));
         }
 
@@ -278,7 +278,7 @@ readonly class ServerUserService
             ->users()
             ->deleteUser($server->getPterodactylServerIdentifier(), $subuserUuid);
 
-        $existingSubuser = $this->serverSubuserRepository->findSubuserByServerAndUser($server, $existingPterocaUser);
+        $existingSubuser = $this->serverSubuserRepository->findSubuserByServerAndUser($server, $existingUser);
         if ($existingSubuser) {
             $this->serverSubuserRepository->delete($existingSubuser);
         }
